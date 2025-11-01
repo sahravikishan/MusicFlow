@@ -22,7 +22,11 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 # Security for CSRF (add schemes!)
-CSRF_TRUSTED_ORIGINS = ['*']
+RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
+else:
+    CSRF_TRUSTED_ORIGINS = ["https://musicflow-mz20.onrender.com"]
 
 # CSRF_TRUSTED_ORIGINS = [
 #
