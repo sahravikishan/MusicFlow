@@ -1,0 +1,309 @@
+/* Reset Verify Page Specific Styles */
+
+.reset-verify-page {
+    background: linear-gradient(135deg, var(--classical-burgundy) 0%, var(--modern-warning) 100%);
+}
+
+.reset-verify-page .classical-ornament {
+    color: var(--modern-success);
+}
+
+.reset-verify-page .ornament-1 {
+    animation-delay: 0.5s;
+}
+
+.reset-verify-page .ornament-2 {
+    animation-delay: 2s;
+}
+
+.reset-verify-page .ornament-3 {
+    animation-delay: 3.5s;
+}
+
+/* Reset verify specific brand subtitle */
+.reset-verify-page .brand-subtitle {
+    color: var(--modern-success);
+}
+
+/* QR Code Container */
+.qr-container {
+    padding: 2rem 0;
+}
+
+.qr-code-wrapper {
+    display: inline-block;
+    padding: 1.5rem;
+    background: var(--classical-ivory);
+    border-radius: 16px;
+    border: 3px solid var(--classical-gold);
+    box-shadow: var(--shadow-elegant);
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.qr-code-canvas {
+    border-radius: 8px;
+    background: white;
+}
+
+.qr-code-wrapper.expired {
+    opacity: 0.5;
+    border-color: var(--modern-danger);
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.qr-code-wrapper.expired::after {
+    content: 'EXPIRED';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--modern-danger);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    z-index: 10;
+}
+
+.qr-info {
+    color: var(--classical-navy);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+/* Countdown Timer */
+.countdown-timer {
+    background: var(--classical-gold);
+    color: var(--classical-navy);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-top: 0.5rem;
+    animation: pulse 2s infinite;
+}
+
+.countdown-timer.warning {
+    background: var(--modern-warning);
+    animation: fastPulse 1s infinite;
+}
+
+.countdown-timer.danger {
+    background: var(--modern-danger);
+    color: white;
+    animation: fastPulse 0.5s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+
+@keyframes fastPulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.7;
+    }
+}
+
+/* Code Input Container */
+.code-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.code-input {
+    width: 3rem;
+    height: 3.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    border: 3px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    background: var(--classical-ivory);
+    color: var(--classical-navy);
+    transition: all 0.3s ease;
+}
+
+.code-input:focus {
+    border-color: var(--classical-gold);
+    background: var(--classical-cream);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
+    outline: none;
+    transform: scale(1.05);
+}
+
+.code-input.is-valid {
+    border-color: var(--modern-success);
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--modern-success);
+}
+
+.code-input.is-invalid {
+    border-color: var(--modern-danger);
+    background: rgba(239, 68, 68, 0.1);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* Step Transitions */
+.form-section {
+    transition: all 0.5s ease-in-out;
+}
+
+.form-section.fade-out {
+    opacity: 0;
+    transform: translateX(-30px);
+}
+
+.form-section.fade-in {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Success Animation */
+.success-check {
+    display: inline-block;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--modern-success);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 0.5rem;
+}
+
+.strength-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: rgba(212, 175, 55, 0.2);
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.strength-fill {
+    height: 100%;
+    transition: all 0.3s ease;
+    border-radius: 2px;
+}
+
+.strength-weak .strength-fill {
+    width: 33%;
+    background: var(--modern-danger);
+}
+
+.strength-medium .strength-fill {
+    width: 66%;
+    background: var(--modern-warning);
+}
+
+.strength-strong .strength-fill {
+    width: 100%;
+    background: var(--modern-success);
+}
+
+.strength-text {
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.strength-weak .strength-text {
+    color: var(--modern-danger);
+}
+
+.strength-medium .strength-text {
+    color: var(--modern-warning);
+}
+
+.strength-strong .strength-text {
+    color: var(--modern-success);
+}
+
+/* Loading State */
+.qr-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    background: var(--classical-cream);
+    border-radius: 12px;
+    border: 2px dashed var(--classical-gold);
+}
+
+.qr-loading i {
+    font-size: 3rem;
+    color: var(--classical-gold);
+    animation: spin 2s linear infinite;
+}
+
+/* Responsive Design */
+@media (max-width: 576px) {
+    .qr-code-wrapper {
+        padding: 1rem;
+    }
+
+    .qr-code-canvas {
+        width: 150px !important;
+        height: 150px !important;
+    }
+
+    .code-input-container {
+        gap: 0.5rem;
+    }
+
+    .code-input {
+        width: 2.5rem;
+        height: 3rem;
+        font-size: 1.2rem;
+    }
+
+    .countdown-timer {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.8rem;
+    }
+}
+
