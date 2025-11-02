@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.core.mail import send_mail  # Simplified to send_mail for debug
+from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
 from django.db import transaction
@@ -163,7 +163,7 @@ def reset(request):
             messages.error(request, 'No account found with this email. Please sign up first.')
             return render(request, 'player/reset.html', {'email_error': True})
 
-        form = PasswordResetForm(request.POST)
+        form = PasswordResetForm({'email': email})
         if form.is_valid():
             email = form.cleaned_data['email'].lower()
             user = User.objects.get(email__iexact=email)
@@ -279,7 +279,7 @@ def reset_trigger(request, token):
         messages.error(request, f'Email failed: {str(e)}. Code is {otp_str} for manual entry.')
 
     cache.delete(f'reset_token_{token}')
-    return render(request, 'player/check_email.html', {'message': 'Please check your mail. A code has been sent!'})
+    return render(request, 'player/check_email.html', {'message': 'Please check your mail. A code has been sent!', 'otp': otp_str if 'otp_str' in locals() else None})
 
 
 def resend_reset_code(request):
