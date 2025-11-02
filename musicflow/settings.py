@@ -18,23 +18,26 @@ SECRET_KEY = 'django-insecure-038*um$twd7kgo295g!op_3si6&0ao6wdzs0b(o&*u+0z6e-x!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = ['localhost', '127.0.0.1', '10.75.211.180', 'new-random-sub.ngrok-free.app']
-ALLOWED_HOSTS = ['*']
+
+# ALLOWED_HOSTS = ['musicflow-mz20.onrender.com', '127.0.0.1','localhost', '127.0.0.1', '10.75.211.180', 'new-random-sub.ngrok-free.app']
+ALLOWED_HOSTS = ['musicflow-mz20.onrender.com', '127.0.0.1']
 
 # Security for CSRF (add schemes!)
-RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-if RENDER_EXTERNAL_HOSTNAME:
-    CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
-else:
-    CSRF_TRUSTED_ORIGINS = ["https://musicflow-mz20.onrender.com"]
+# RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
+# if RENDER_EXTERNAL_HOSTNAME:
+#     CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
+# else:
+#     CSRF_TRUSTED_ORIGINS = ["https://musicflow-mz20.onrender.com"]
 
-# CSRF_TRUSTED_ORIGINS = [
-#
-#     'http://localhost:8000',
-#     'http://127.0.0.1:8000',
-#     'http://10.75.211.180:8000',
-#     'https://brainier-delmer-subsonic.ngrok-free.dev',  # Your ngrok (update on restart)
-# ]
+CSRF_TRUSTED_ORIGINS = [
+
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+    'http://10.75.211.180:8000',
+    'https://musicflow-mz20.onrender.com'
+
+    # 'https://brainier-delmer-subsonic.ngrok-free.dev',  # Your ngrok (update on restart)
+]
 
 
 INSTALLED_APPS = [
@@ -110,7 +113,8 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files
 MEDIA_URL = '/media/'
