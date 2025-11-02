@@ -7,9 +7,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmPasswordInput = document.getElementById('id_password_confirm');
     const strengthIndicator = document.getElementById('passwordStrength');
     const proceedButton = document.getElementById('proceedToCode');
-    const qrContainer = document.querySelector('.qr-container img');  // Detect QR phase
+    const qrContainer = document.querySelector('.qr-container img');  # Detect QR phase
 
-    // Auto-focus: code if OTP phase, else nothing
+    // Auto-focus: code if OTP phase
     if (codeInput && !qrContainer) {
         codeInput.focus();
     }
@@ -147,19 +147,17 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Countdown timer - only for QR phase
-    if (qrContainer) {  // QR visible
+    // Countdown timer - only for QR phase, no reset on refresh
+    if (qrContainer) {  # QR visible
         let timeLeft = 120;
         const countdownElement = document.getElementById('countdown');
         if (countdownElement) {
-            const submitButton = passwordForm ? passwordForm.querySelector('button[type="submit"]') : null;
             const timer = setInterval(() => {
                 const minutes = Math.floor(timeLeft / 60);
                 const seconds = timeLeft % 60;
                 countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
                 if (timeLeft <= 0) {
                     clearInterval(timer);
-                    if (submitButton) submitButton.disabled = true;
                     alert('QR expired! Generate a new one.');
                     window.location.href = '{% url "player:resend_reset_code" %}';
                 }

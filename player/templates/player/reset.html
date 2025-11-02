@@ -81,13 +81,9 @@
                                         <label for="resetUserId" class="form-label elegant-label">
                                             <i class="fas fa-user me-2"></i>User ID or Email Address
                                         </label>
-                                        <input type="email" class="form-control elegant-input {% if form.email.errors %}is-invalid{% endif %}" id="resetUserId" name="email" value="{{ request.POST.email }}" required placeholder="Enter your User ID or Email">
+                                        <input type="email" class="form-control elegant-input {% if email_error %}is-invalid{% endif %}" id="resetUserId" name="email" value="{{ request.POST.email }}" required placeholder="Enter your registered email">
                                         <div class="invalid-feedback">
-                                            {% if form.email.errors %}
-                                                {{ form.email.errors.0 }}
-                                            {% else %}
-                                                Please enter your User ID or Email address.
-                                            {% endif %}
+                                            No account found with this email. Please sign up.
                                         </div>
                                         <div class="form-text">
                                             We'll generate a secure QR code for password reset verification
