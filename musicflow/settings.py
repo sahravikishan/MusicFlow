@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'player',
+
     # 'django_redis',  # Commented out since using locmem cache
 ]
 
