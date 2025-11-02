@@ -1,24 +1,37 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Check Email</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .card { max-width: 400px; margin: auto; }
-    .icon { font-size: 3rem; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Sent - MusicFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <style>
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .card { border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+    </style>
 </head>
-<body class="bg-light">
-  <div class="container py-5">
-    <div class="card shadow text-center p-4">
-      <i class="fas fa-envelope text-success icon mb-3"></i>
-      <h4>{{ message }}</h4>
-      <p class="text-muted">The code was sent to your email, please check it.</p>
-      <a href="{% url 'player:reset_verify' %}" class="btn btn-primary">Enter Code</a>
+<body>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body text-center p-5">
+                        <i class="fas fa-envelope-open-text fa-3x text-success mb-3"></i>
+                        <h2 class="card-title">Code Sent!</h2>
+                        <p class="card-text lead">Code has been sent to your mail. Please check your inbox (and spam folder).</p>
+                        <a href="{% url 'player:reset_verify' %}" class="btn btn-warning btn-lg">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Enter Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

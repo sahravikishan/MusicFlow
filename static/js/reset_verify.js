@@ -7,9 +7,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const confirmPasswordInput = document.getElementById('id_password_confirm');
     const strengthIndicator = document.getElementById('passwordStrength');
     const proceedButton = document.getElementById('proceedToCode');
+    const qrContainer = document.querySelector('.qr-container img');  // Detect QR phase
 
-    // Auto-focus code input
-    if (codeInput) {
+    // Auto-focus: code if OTP phase, else nothing
+    if (codeInput && !qrContainer) {
         codeInput.focus();
     }
 
@@ -67,11 +68,11 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // "I Have the Code" button action (refresh page to refocus)
+    // "I've Scanned" button (refresh)
     if (proceedButton) {
         proceedButton.addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.reload(); // Refreshes to refocus on form
+            window.location.reload();
         });
     }
 
@@ -142,24 +143,25 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Countdown timer
-    let timeLeft = 120;
-    const countdownElement = document.getElementById('countdown');
-    if (countdownElement) {
-        const submitButton = passwordForm ? passwordForm.querySelector('button[type="submit"]') : null;
-        const timer = setInterval(() => {
-            const minutes = Math.floor(timeLeft / 60);
-            const seconds = timeLeft % 60;
-            countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                if (submitButton) submitButton.disabled = true;
-                alert('Code expired! Please request a new one.');
-                const generateNewCodeLink = document.getElementById('generateNewCode');
-                if (generateNewCodeLink) generateNewCodeLink.focus();
-            }
-            timeLeft--;
-        }, 1000);
+    // Countdown timer - only for QR phase
+    if (qrContainer) {  // QR visible
+        let timeLeft = 120;
+        const countdownElement = document.getElementById('countdown');
+        if (countdownElement) {
+            const submitButton = passwordForm ? passwordForm.querySelector('button[type="submit"]') : null;
+            const timer = setInterval(() => {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    if (submitButton) submitButton.disabled = true;
+                    alert('QR expired! Generate a new one.');
+                    window.location.href = '{% url "player:resend_reset_code" %}';
+                }
+                timeLeft--;
+            }, 1000);
+        }
     }
 });
 

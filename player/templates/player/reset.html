@@ -71,22 +71,24 @@
                         <div class="form-section">
                             <div class="section-header text-center mb-4">
                                 <h2 class="form-title">Reset Password</h2>
-                                <p class="form-subtitle">Enter your registered email to receive a QR code</p>
+                                <p class="form-subtitle">Enter your User ID or Email to request a password reset</p>
                             </div>
-                            <form id="resetForm" action="{% url 'player:reset' %}" method="post" class="needs-validation" novalidate>
+
+                            <form id="resetForm" method="post" action="{% url 'player:reset' %}" class="needs-validation" novalidate>
                                 {% csrf_token %}
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <label for="resetUserId" class="form-label elegant-label">
-                                            <i class="fas fa-envelope me-2"></i>Email Address
+                                            <i class="fas fa-user me-2"></i>User ID or Email Address
                                         </label>
-                                        {{ form.email }}
-                                        <div class="invalid-feedback">{{ form.email.errors|default:"Please enter a valid email address." }}</div>
+                                        <input type="text" class="form-control elegant-input" id="resetUserId" name="email" required placeholder="Enter your User ID or Email">
+                                        <div class="invalid-feedback">Please enter your User ID or Email address.</div>
                                         <div class="form-text">
-                                            We'll send a QR code to this email for password reset verification
+                                            We'll generate a secure QR code for password reset verification
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row mb-4">
                                     <div class="col-12">
                                         <button type="submit" class="btn elegant-btn elegant-btn-warning w-100">

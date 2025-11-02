@@ -13,32 +13,24 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-038*um$twd7kgo295g!op_3si6&0ao6wdzs0b(o&*u+0z6e-x!'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-038*um$twd7kgo295g!op_3si6&0ao6wdzs0b(o&*u+0z6e-x!')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
-
-# ALLOWED_HOSTS = ['musicflow-mz20.onrender.com', '127.0.0.1','localhost', '127.0.0.1', '10.75.211.180', 'new-random-sub.ngrok-free.app']
-ALLOWED_HOSTS = ['musicflow-mz20.onrender.com', '127.0.0.1']
+ALLOWED_HOSTS = ['musicflow-mz20.onrender.com', '127.0.0.1', 'localhost']
 
 # Security for CSRF (add schemes!)
-# RENDER_EXTERNAL_HOSTNAME = os.getenv('RENDER_EXTERNAL_HOSTNAME')
-# if RENDER_EXTERNAL_HOSTNAME:
-#     CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
-# else:
-#     CSRF_TRUSTED_ORIGINS = ["https://musicflow-mz20.onrender.com"]
-
-CSRF_TRUSTED_ORIGINS = [
-
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-    'http://10.75.211.180:8000',
-    'https://musicflow-mz20.onrender.com'
-
-    # 'https://brainier-delmer-subsonic.ngrok-free.dev',  # Your ngrok (update on restart)
-]
-
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS = [f"https://{RENDER_EXTERNAL_HOSTNAME}"]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://10.75.211.180:8000',
+        'https://musicflow-mz20.onrender.com',
+    ]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -48,8 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'player',
-
-    # 'django_redis',  # Commented out since using locmem cache
 ]
 
 MIDDLEWARE = [
@@ -114,7 +104,6 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Media files
 MEDIA_URL = '/media/'
@@ -132,15 +121,19 @@ if not DEBUG:
 LOGIN_URL = 'player:login'
 LOGIN_REDIRECT_URL = 'player:index'
 
-# Update this section in settings.py
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # For debugging
+# EMAIL CONFIGURATION - FIXED FOR REAL SENDING
+# Use console for local debugging; SMTP for Render/production
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Prints to console locally
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'  # Real SMTP on Render
 
-# EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ravisproject4361@gmail.com'
-EMAIL_HOST_PASSWORD = 'mqeberjwrzzzupbu'  # Ensure this matches exactly
-DEFAULT_FROM_EMAIL = 'ravisproject4361@gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'ravisproject4361@gmail.com')  # Use env var on Render
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'mqeberjwrzzzupbu')  # Use env var; app password!
+DEFAULT_FROM_EMAIL = os.environ.get('EMAIL_HOST_USER', 'ravisproject4361@gmail.com')
 
 # Session settings
 SESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds

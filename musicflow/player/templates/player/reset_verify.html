@@ -75,18 +75,27 @@
                             </div>
 
                             <div class="qr-container text-center mb-4">
-                                <div class="qr-code-wrapper">
-                                    <img src="data:image/png;base64,{{ qr_base64 }}" alt="QR Code" width="150" />
-                                </div>
-                                <p class="qr-info">
-                                    <i class="fas fa-info-circle me-2"></i>
-                                    Reset code for User: <strong>{{ user_display }}</strong>
-                                </p>
-                                <div class="countdown-timer">
-                                    <i class="fas fa-clock me-2"></i>
-                                    <span id="countdown">2:00</span> remaining
-                                </div>
+                                {% if show_qr %}
+                                    <div class="qr-code-wrapper">
+                                        <img src="data:image/png;base64,{{ qr_base64 }}" alt="Scan this QR to get your code" width="200" class="img-fluid" />
+                                    </div>
+                                    <p class="qr-info mt-2">
+                                        <i class="fas fa-mobile-alt me-2"></i>Scan this QR on another device (e.g., phone) to receive your 6-digit code via email.
+                                    </p>
+                                    <p class="text-muted small">For: <strong>{{ user_display }}</strong> | Valid for 2 minutes</p>
+                                {% else %}
+                                    <div class="alert alert-success">
+                                        <i class="fas fa-check-circle me-2"></i>Code sent to your email! Please check your inbox.
+                                    </div>
+                                {% endif %}
                             </div>
+
+                            {% if show_qr %}
+                            <div class="countdown-timer text-center mb-4">
+                                <i class="fas fa-clock me-2"></i>
+                                <span id="countdown">2:00</span> remaining to scan
+                            </div>
+                            {% endif %}
 
                             <form id="passwordForm" action="{% url 'player:reset_verify' %}" method="post" class="needs-validation" novalidate>
                                 {% csrf_token %}
@@ -147,30 +156,32 @@
                             <div class="row mt-3">
                                 <div class="col-12 text-center">
                                     <a href="{% url 'player:resend_reset_code' %}" class="btn btn-link elegant-link" id="generateNewCode">
-                                        <i class="fas fa-redo me-2"></i>Generate New Code
+                                        <i class="fas fa-redo me-2"></i>Generate New QR
                                     </a>
                                 </div>
                             </div>
 
+                            {% if code_ready %}
                             <div class="row mt-3">
                                 <div class="col-12 text-center">
-                                    <a href="{% url 'player:reset_verify' %}" class="btn btn-primary" id="proceedToCode">
-                                        <i class="fas fa-check me-2"></i>I Have the Code
+                                    <a href="#" class="btn btn-primary" id="proceedToCode" onclick="location.reload(); return false;">
+                                        <i class="fas fa-check me-2"></i>I've Scanned - Refresh for Code Entry
                                     </a>
                                 </div>
                             </div>
-                        </div>
+                            {% endif %}
 
-                        <div class="divider">
-                            <span>or</span>
-                        </div>
+                            <div class="divider">
+                                <span>or</span>
+                            </div>
 
-                        <div class="row">
-                            <div class="col-12 text-center">
-                                <p class="auth-switch">
-                                    Remember your password?
-                                    <a href="{% url 'player:login' %}" class="elegant-link-primary">Back to login</a>
-                                </p>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <p class="auth-switch">
+                                        Remember your password?
+                                        <a href="{% url 'player:login' %}" class="elegant-link-primary">Back to login</a>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
