@@ -68,11 +68,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // "I've Scanned" button (refresh)
+    // "I Have the Code" button (focus form, no reload)
     if (proceedButton) {
         proceedButton.addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.reload();
+            if (codeInput) {
+                codeInput.focus();
+                codeInput.select();  // Highlight for easy entry
+            }
+            this.textContent = 'Ready! Enter Code Above';  // Visual feedback
         });
     }
 

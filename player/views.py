@@ -16,7 +16,7 @@ import base64
 from django.core.cache import cache
 import uuid
 import socket
-from django.contrib.auth.hashers import make_password, check_password  # Added missing imports
+from django.contrib.auth.hashers import make_password, check_password
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # Cache-based rate limiting
 RATE_LIMIT_SECONDS = 60
 MAX_ATTEMPTS = 10
-QR_TIMEOUT_SECONDS = 120   # 2 minutes
+QR_TIMEOUT_SECONDS = 120  # 2 minutes
 OTP_TIMEOUT_SECONDS = 120  # 2 minutes
 OTP_ATTEMPTS_LIMIT = 5
 
@@ -39,14 +39,17 @@ def check_rate_limit(request):
     cache.set(cache_key, attempts + 1, timeout=RATE_LIMIT_SECONDS)
     return True
 
+
 def get_reset_url(request, path):
-    protocol = 'https'  # Force HTTPS for Render/mobile compatibility
-    domain = request.get_host().replace(':8000', '')  # Strip local port
+    # Fixed for production/Render: Use request host
+    protocol = 'https' if request.is_secure() else 'http'
+    domain = request.get_host()
     return f"{protocol}://{domain}{path}"
 
 
 def index(request):
     return render(request, 'player/index.html')
+
 
 def login(request):
     if request.method == 'POST':
@@ -93,11 +96,14 @@ def login(request):
         form = LoginForm()
     return render(request, 'player/login.html', {'form': form})
 
+
 def privacy(request):
     return render(request, 'player/privacy.html')
 
+
 def terms_condition(request):
     return render(request, 'player/terms_condition.html')
+
 
 def signup(request):
     if request.method == 'POST':
@@ -151,6 +157,7 @@ def signup(request):
         form = SignupForm()
     return render(request, 'player/signup.html', {'form': form})
 
+
 def reset(request):
     if request.method == 'POST':
         if not check_rate_limit(request):
@@ -158,6 +165,15 @@ def reset(request):
             return render(request, 'player/reset.html')
 
         form = PasswordResetForm(request.POST)
+        email = request.POST.get('email', '').strip().lower()
+        logger.info(f"Reset attempt for email: {email}")  # Log email
+        if User.objects.filter(email__iexact=email).exists():
+            logger.info(f"User exists for email: {email}")
+        else:
+            logger.warning(f"No user for email: {email}")
+            messages.error(request, 'No account found with this email. Please sign up.')
+            return render(request, 'player/reset.html')
+
         if form.is_valid():
             email = form.cleaned_data['email'].lower()  # Normalize
             user = get_object_or_404(User, email__iexact=email)
@@ -183,6 +199,7 @@ def reset(request):
             request.session['reset_user_id'] = user.pk
             request.session['reset_token'] = token
             request.session['qr_base64'] = qr_base64
+            request.session['otp_sent'] = False  # Reset flag
             request.session.modified = True
 
             # No email here! Redirect to verify page to show QR
@@ -190,7 +207,12 @@ def reset(request):
             return redirect('player:reset_verify')
 
         else:
-            messages.error(request, 'Please correct the errors below.')
+            # Added: Flash specific form errors as messages
+            logger.error(f"Reset form invalid: {form.errors}")
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field.capitalize()}: {error}")
+                    # Highlight field in template (pass to context)
     else:
         form = PasswordResetForm()
 
@@ -202,6 +224,7 @@ def reset_verify(request):
     user_pk = request.session.get('reset_user_id')
     token = request.session.get('reset_token')
     qr_base64 = request.session.get('qr_base64')
+    otp_sent = request.session.get('otp_sent', False)
 
     if not all([user_pk, token, qr_base64]):
         messages.error(request, 'Session expired. Restart reset.')
@@ -211,7 +234,7 @@ def reset_verify(request):
     code_key = f'reset_code_{user.pk}'
     otp_exists = cache.get(code_key) is not None  # True after scan/OTP sent
 
-    show_qr = not otp_exists  # Show QR until OTP sent
+    show_qr = not otp_sent  # Hide QR/timer once OTP sent (persists on refresh)
 
     if request.method == 'POST':
         form = PasswordResetConfirmForm(request.POST)
@@ -223,7 +246,7 @@ def reset_verify(request):
                 user.set_password(form.cleaned_data['password'])
                 user.save()
                 cache.delete(code_key)
-                for k in ['reset_user_id', 'reset_token', 'qr_base64']:
+                for k in ['reset_user_id', 'reset_token', 'qr_base64', 'otp_sent']:
                     request.session.pop(k, None)
                 messages.success(request, 'Password reset successful! You can now log in.')
                 return redirect('player:login')
@@ -240,7 +263,7 @@ def reset_verify(request):
         'qr_base64': qr_base64,
         'user_display': user.username,
         'show_qr': show_qr,
-        'code_ready': otp_exists,
+        'code_ready': otp_sent or otp_exists,  # Use flag or cache
     })
 
 
@@ -254,6 +277,8 @@ def reset_trigger(request, token):
     otp = f"{random.randint(100000, 999999)}"
     otp_hashed = make_password(otp)
     cache.set(f'reset_code_{user.pk}', otp_hashed, timeout=OTP_TIMEOUT_SECONDS)
+
+    logger.info(f"Generated OTP: {otp} for {user.email}")  # Debug OTP in logs
 
     # Send OTP mail with error handling
     mail = EmailMultiAlternatives(
@@ -271,13 +296,17 @@ def reset_trigger(request, token):
     try:
         mail.send()
         logger.info(f"OTP SUCCESS: Sent to {user.email} (Code: {otp})")  # Check Render logs
+        request.session['otp_sent'] = True  # Set flag for verify page
+        request.session.modified = True
+        messages.success(request, 'Code sent successfully!')
     except Exception as e:
         logger.error(f"OTP FAILED for {user.email}: {str(e)}")  # Will show in logs
-        # Optional: Show user error page
-        return render(request, 'player/error.html', {'message': f'Email send failed: {str(e)}. Try resending.'})
+        messages.error(request,
+                       f'Email send failed: {str(e)}. Check settings and try resending.')  # Flash to check_email
 
     cache.delete(f'reset_token_{token}')
-    return render(request, 'player/check_email.html', {'message': 'Please check your mail. A code has been sent!'})
+    return render(request, 'player/check_email.html',
+                  {'message': 'Please check your mail. A code has been sent!', 'error': messages.get_messages(request)})
 
 
 def resend_reset_code(request):
@@ -302,9 +331,10 @@ def resend_reset_code(request):
     img.save(buffer, format="PNG")
     qr_base64 = base64.b64encode(buffer.getvalue()).decode()
 
-    # Update session
+    # Update session (reset flag)
     request.session['reset_token'] = token
     request.session['qr_base64'] = qr_base64
+    request.session['otp_sent'] = False  # Reset for new QR
     request.session.modified = True
 
     messages.success(request, 'New QR generated! Scan it on another device.')
@@ -313,6 +343,7 @@ def resend_reset_code(request):
 
 def success(request):
     return render(request, 'player/success.html')
+
 
 def logout(request):
     auth_logout(request)

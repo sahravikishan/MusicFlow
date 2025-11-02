@@ -187,3 +187,4 @@ class PasswordResetConfirmForm(forms.Form):
             raise forms.ValidationError('Passwords do not match.')
 
         return cleaned_data
+
