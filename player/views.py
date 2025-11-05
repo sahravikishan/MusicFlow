@@ -5,16 +5,12 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
 from django.urls import reverse
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from .forms import LoginForm, SignupForm, PasswordResetForm, PasswordResetConfirmForm
 from django.http import JsonResponse
 import logging
 import random
-import qrcode
-from io import BytesIO
-import base64
 from django.core.cache import cache
-import uuid
 from django.contrib.auth.hashers import make_password, check_password
 
 # Set up logging
@@ -24,8 +20,7 @@ logger = logging.getLogger(__name__)
 # Cache-based rate limiting
 RATE_LIMIT_SECONDS = 60
 MAX_ATTEMPTS = 10
-QR_TIMEOUT_SECONDS = 120   # 2 minutes
-OTP_TIMEOUT_SECONDS = 120  # 2 minutes
+RESET_TIMEOUT_SECONDS = 120   # 2 minutes
 
 
 def check_rate_limit(request):
@@ -36,12 +31,6 @@ def check_rate_limit(request):
         return False
     cache.set(cache_key, attempts + 1, timeout=RATE_LIMIT_SECONDS)
     return True
-
-
-def get_reset_url(request, path):
-    protocol = 'https' if request.is_secure() else 'http'
-    domain = request.get_host()
-    return f"{protocol}://{domain}{path}"
 
 
 def index(request):
@@ -150,169 +139,119 @@ def signup(request):
         form = SignupForm()
     return render(request, 'player/signup.html', {'form': form})
 
+
+
 def reset(request):
     if request.method == 'POST':
         if not check_rate_limit(request):
-            messages.error(request, 'Too many attempts. Try later.')
+            messages.error(request, 'Too many reset attempts. Please try again later.')
             return render(request, 'player/reset.html')
 
-        email = request.POST.get('email', '').strip().lower()
-        logger.info(f"Reset attempt for email: {email}")
-        if not User.objects.filter(email__iexact=email).exists():
-            logger.warning(f"No user for email: {email}")
-            messages.error(request, 'No account found with this email. Please sign up first.')
-            return render(request, 'player/reset.html', {'email_error': True})
-
-        form = PasswordResetForm({'email': email})
+        form = PasswordResetForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email'].lower()
-            user = User.objects.get(email__iexact=email)
-            logger.info(f"User found for reset: {user.username}")
+            email = form.cleaned_data['email']
+            try:
+                user = User.objects.get(email=email)
+                # Generate 6-digit OTP
+                otp = random.randint(100000, 999999)
+                otp_str = str(otp)
+                otp_hashed = make_password(otp_str)
+                cache.set(f'reset_code_{user.pk}', otp_hashed, timeout=RESET_TIMEOUT_SECONDS)
 
-            # Generate token
-            token = str(uuid.uuid4())
-            cache.set(f'reset_token_{token}', user.pk, timeout=QR_TIMEOUT_SECONDS)
+                logger.info(f"Generated OTP: {otp_str} for {user.email}")
 
-            # Build QR URL
-            trigger_path = reverse('player:reset_trigger', kwargs={'token': token})
-            trigger_url = get_reset_url(request, trigger_path)
-
-            # Generate QR
-            qr = qrcode.QRCode(version=1, box_size=6, border=4)
-            qr.add_data(trigger_url)
-            qr.make(fit=True)
-            img = qr.make_image(fill_color="black", back_color="white")
-            buffer = BytesIO()
-            img.save(buffer, format="PNG")
-            qr_base64 = base64.b64encode(buffer.getvalue()).decode()
-
-            # Store in session
-            request.session['reset_user_id'] = user.pk
-            request.session['reset_token'] = token
-            request.session['qr_base64'] = qr_base64
-            request.session['otp_sent'] = False
-            request.session.modified = True
-
-            messages.success(request, 'QR generated! Scan it on another device to get your code.')
-            return redirect('player:reset_verify')
-
+                # Send email with enhanced logging
+                try:
+                    print(f"[EMAIL DEBUG] Sending OTP {otp_str} to {user.email} using backend: {settings.EMAIL_BACKEND}")
+                    logger.info(f"OTP attempt: {otp_str} to {user.email}")
+                    sent_count = send_mail(
+                        subject="Your MusicFlow Reset Code",
+                        message=f"Your code is for reset password : {otp_str}\nValid for 2 minutes only.",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                        html_message=f"<p>Your code is for reset password : <b>{otp_str}</b></p><p>Valid for 2 minutes only.</p>",
+                    )
+                    print(f"[EMAIL DEBUG] Sent {sent_count} emails successfully!")
+                    logger.info(f"OTP sent successfully to {user.email}")
+                    # Store user in session for next steps
+                    request.session['reset_user_id'] = user.pk
+                    messages.success(request, 'Reset code sent! Check your email.')
+                    return redirect('player:reset_sent')
+                except Exception as e:
+                    print(f"[EMAIL ERROR] Failed: {str(e)}")
+                    logger.error(f"Email failed for {user.email}: {str(e)}")
+                    messages.error(request, f'Email send failed: {str(e)}')
+                    # Clean up cache on failure
+                    cache.delete(f'reset_code_{user.pk}')
+            except User.DoesNotExist:
+                messages.error(request, 'No account found with this email. Please sign up.')
         else:
-            logger.error(f"Reset form invalid: {form.errors}")
+            logger.debug(f'Reset form errors: {form.errors}')
             messages.error(request, 'Please correct the errors below.')
-            for field, errors in form.errors.items():
-                messages.error(request, f"{field}: {errors[0]}")
     else:
         form = PasswordResetForm()
 
     return render(request, 'player/reset.html', {'form': form})
 
 
-def reset_verify(request):
+def reset_sent(request):
+    # Simple page to show email sent message
     user_pk = request.session.get('reset_user_id')
     if not user_pk:
-        messages.error(request, 'Session expired. Restart reset.')
+        messages.error(request, 'Session expired. Please start over.')
+        return redirect('player:reset')
+    return render(request, 'player/reset_sent.html')
+
+
+def reset_confirm(request):
+    user_pk = request.session.get('reset_user_id')
+    if not user_pk:
+        messages.error(request, 'Session expired. Please start over.')
         return redirect('player:reset')
 
     user = get_object_or_404(User, pk=user_pk)
     code_key = f'reset_code_{user.pk}'
-    otp_sent = request.session.get('otp_sent', False)
-    show_qr = not otp_sent
-    otp_exists = cache.get(code_key) is not None
+
+    # SECURITY FIX: Block access if no valid code in cache (expired or invalid)
+    hashed_otp = cache.get(code_key)
+    if not hashed_otp:
+        logger.warning(f"Expired/invalid code attempt for user {user.pk} - redirecting")
+        messages.error(request, 'Verification code expired or invalid. Please request a new one.')
+        cache.delete(code_key)  # Ensure cleanup
+        del request.session['reset_user_id']  # Clear stale session
+        return redirect('player:reset')
 
     if request.method == 'POST':
         form = PasswordResetConfirmForm(request.POST)
         if form.is_valid():
             code = form.cleaned_data['code']
-            hashed_otp = cache.get(code_key)
-            if hashed_otp and check_password(code, hashed_otp):
+            if check_password(code, hashed_otp):
                 user.set_password(form.cleaned_data['password'])
                 user.save()
                 cache.delete(code_key)
-                request.session.clear()  # Clear session
+                del request.session['reset_user_id']  # Clear session
+                logger.info(f"Password reset successful for user {user.pk}")
                 messages.success(request, 'Password reset successful! You can now log in.')
                 return redirect('player:login')
             else:
-                messages.error(request, 'Invalid or expired code. Try resending.')
+                messages.error(request, 'Invalid code. Please request a new one.')
+                cache.delete(code_key)  # Invalidate on wrong guess
+                logger.warning(f"Invalid code attempt for user {user.pk}")
         else:
             messages.error(request, 'Please correct the errors below.')
-
     else:
         form = PasswordResetConfirmForm()
 
-    return render(request, 'player/reset_verify.html', {
+    return render(request, 'player/reset_confirm.html', {
         'form': form,
-        'qr_base64': request.session.get('qr_base64'),
         'user_display': user.username,
-        'show_qr': show_qr,
-        'code_ready': otp_sent or otp_exists,
     })
-
-
-def reset_trigger(request, token):
-    user_pk = cache.get(f'reset_token_{token}')
-    if not user_pk:
-        return render(request, 'player/error.html', {'message': 'QR expired or invalid. Please generate a new one.'})
-
-    user = get_object_or_404(User, pk=user_pk)
-    otp = random.randint(100000, 999999)
-    otp_str = str(otp)
-    otp_hashed = make_password(otp_str)
-    cache.set(f'reset_code_{user.pk}', otp_hashed, timeout=OTP_TIMEOUT_SECONDS)
-
-    logger.info(f"Generated OTP: {otp_str} for {user.email}")  # Always log OTP
-
-    # Simple send_mail for debug
-    try:
-        send_mail(
-            subject="Your MusicFlow Reset Code",
-            message=f"Your code is: {otp_str}\nValid for 2 minutes.",
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[user.email],
-            fail_silently=False,
-            html_message=f"<p>Your code is: <b>{otp_str}</b></p><p>Valid for 2 minutes.</p>",
-        )
-        logger.info(f"OTP SUCCESS: Sent to {user.email} (Code: {otp_str})")
-        request.session['otp_sent'] = True
-        request.session.modified = True
-    except Exception as e:
-        logger.error(f"OTP FAILED for {user.email}: {str(e)} (Code was {otp_str})")
-        messages.error(request, f'Email failed: {str(e)}. Code is {otp_str} for manual entry.')
-
-    cache.delete(f'reset_token_{token}')
-    return render(request, 'player/check_email.html', {'message': 'Please check your mail. A code has been sent!', 'otp': otp_str if 'otp_str' in locals() else None})
-
-
-def resend_reset_code(request):
-    user_pk = request.session.get('reset_user_id')
-    if not user_pk:
-        messages.error(request, 'Session expired. Restart.')
-        return redirect('player:reset')
-
-    user = get_object_or_404(User, pk=user_pk)
-    token = str(uuid.uuid4())
-    cache.set(f'reset_token_{token}', user.pk, timeout=QR_TIMEOUT_SECONDS)
-    trigger_path = reverse('player:reset_trigger', kwargs={'token': token})
-    trigger_url = get_reset_url(request, trigger_path)
-
-    qr = qrcode.QRCode(version=1, box_size=6, border=4)
-    qr.add_data(trigger_url)
-    qr.make(fit=True)
-    img = qr.make_image(fill_color="black", back_color="white")
-    buffer = BytesIO()
-    img.save(buffer, format="PNG")
-    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
-
-    request.session['reset_token'] = token
-    request.session['qr_base64'] = qr_base64
-    request.session['otp_sent'] = False
-    request.session.modified = True
-
-    messages.success(request, 'New QR generated! Scan it on another device.')
-    return redirect('player:reset_verify')
 
 
 def success(request):
     return render(request, 'player/success.html')
+
 
 def logout(request):
     auth_logout(request)

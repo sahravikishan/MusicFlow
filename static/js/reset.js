@@ -30,7 +30,6 @@ document.addEventListener('DOMContentLoaded', function() {
         resetForm.addEventListener('submit', function(e) {
             const value = emailInput ? emailInput.value.trim() : '';
             console.log('Reset form submitted with email:', value);
-            console.log('Form action:', resetForm.action || 'Current URL (/reset/)');
 
             if (!value) {
                 e.preventDefault();

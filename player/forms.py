@@ -151,7 +151,7 @@ class PasswordResetConfirmForm(forms.Form):
         validators=[RegexValidator(r'^\d{6}$', 'Must be a 6-digit code.')],
         widget=forms.TextInput(attrs={
             'class': 'form-control elegant-input',
-            'placeholder': 'Enter 6-digit code',
+            'placeholder': 'Enter code sent on your mail',
             'id': 'id_code',
             'autocomplete': 'off'
         })
