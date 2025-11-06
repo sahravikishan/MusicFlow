@@ -172,6 +172,29 @@ def reset(request):
                         fail_silently=False,
                         html_message=f"<p>Your code is for reset password : <b>{otp_str}</b></p><p>Valid for 2 minutes only.</p>",
                     )
+
+                    logo_url = request.build_absolute_uri('/static/images/favicon.jpg')
+                    html_message = f"""
+                    <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
+                        <img src="{logo_url}" alt="MusicFlow Logo" style="width: 100px; height: 100px; border-radius: 10px;">
+                        <h2 style="color: #333;">MusicFlow Password Reset</h2>
+                        <p style="font-size: 16px;">Your reset code is:</p>
+                        <p style="font-size: 22px; font-weight: bold; color: #007BFF;">{otp_str}</p>
+                        <p style="color: #555;">Valid for 2 minutes only.</p>
+                        <hr style="margin: 20px 0;">
+                        <p style="font-size: 12px; color: #999;">This is an automated message from MusicFlow. Please do not reply.</p>
+                    </div>
+                    """
+
+                    sent_count = send_mail(
+                        subject="🎵 Your MusicFlow Reset Code",
+                        message=f"Your code is for reset password : {otp_str}\nValid for 2 minutes only.",
+                        from_email=settings.DEFAULT_FROM_EMAIL,
+                        recipient_list=[user.email],
+                        fail_silently=False,
+                        html_message=html_message,
+                    )
+
                     print(f"[EMAIL DEBUG] Sent {sent_count} emails successfully!")
                     logger.info(f"OTP sent successfully to {user.email}")
                     # Store user in session for next steps

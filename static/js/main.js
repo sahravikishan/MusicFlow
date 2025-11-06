@@ -172,7 +172,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPasswordToggle('togglePassword', 'loginPassword');
     setupPasswordToggle('toggleSignupPassword', 'signupPassword');
 
-    // Generic setup for all password toggles
+    // Generic setup for all password toggles - COMMENTED OUT FOR reset_confirm PAGE TO AVOID CONFLICTS
+    /*
     const passwordToggles = document.querySelectorAll('.password-toggle');
     console.log(`Found ${passwordToggles.length} password toggles`);
 
@@ -202,6 +203,12 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set initial title
         toggle.setAttribute('title', 'Show password');
     });
+    */
+
+    // Condition it to skip if on reset_confirm page (optional fallback)
+    if (!window.location.pathname.includes('reset_confirm')) {
+        // Uncomment and use the generic code above if needed for other pages
+    }
 
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {

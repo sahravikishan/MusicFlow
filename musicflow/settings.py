@@ -134,7 +134,7 @@ LOGIN_REDIRECT_URL = 'player:index'
 # -------------------------------------------------------
 # EMAIL SETTINGS (REAL SMTP + DEV TOGGLE)
 # -------------------------------------------------------
-USE_REAL_EMAIL = True  # ✅ Change this to False for console debug (no real send)
+USE_REAL_EMAIL = True  # Change this to False for console debug (no real send)
 
 if USE_REAL_EMAIL:
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
