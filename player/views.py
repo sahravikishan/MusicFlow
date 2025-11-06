@@ -139,8 +139,6 @@ def signup(request):
         form = SignupForm()
     return render(request, 'player/signup.html', {'form': form})
 
-
-
 def reset(request):
     if request.method == 'POST':
         if not check_rate_limit(request):
@@ -160,19 +158,8 @@ def reset(request):
 
                 logger.info(f"Generated OTP: {otp_str} for {user.email}")
 
-                # Send email with enhanced logging
+                # Send email with enhanced HTML design
                 try:
-                    print(f"[EMAIL DEBUG] Sending OTP {otp_str} to {user.email} using backend: {settings.EMAIL_BACKEND}")
-                    logger.info(f"OTP attempt: {otp_str} to {user.email}")
-                    sent_count = send_mail(
-                        subject="Your MusicFlow Reset Code",
-                        message=f"Your code is for reset password : {otp_str}\nValid for 2 minutes only.",
-                        from_email=settings.DEFAULT_FROM_EMAIL,
-                        recipient_list=[user.email],
-                        fail_silently=False,
-                        html_message=f"<p>Your code is for reset password : <b>{otp_str}</b></p><p>Valid for 2 minutes only.</p>",
-                    )
-
                     logo_url = request.build_absolute_uri('/static/images/favicon.jpg')
                     html_message = f"""
                     <div style="font-family: Arial, sans-serif; text-align: center; padding: 20px;">
@@ -186,6 +173,7 @@ def reset(request):
                     </div>
                     """
 
+                    print(f"[EMAIL DEBUG] Sending OTP {otp_str} to {user.email} using backend: {settings.EMAIL_BACKEND}")
                     sent_count = send_mail(
                         subject="🎵 Your MusicFlow Reset Code",
                         message=f"Your code is for reset password : {otp_str}\nValid for 2 minutes only.",
@@ -197,16 +185,18 @@ def reset(request):
 
                     print(f"[EMAIL DEBUG] Sent {sent_count} emails successfully!")
                     logger.info(f"OTP sent successfully to {user.email}")
+
                     # Store user in session for next steps
                     request.session['reset_user_id'] = user.pk
                     messages.success(request, 'Reset code sent! Check your email.')
                     return redirect('player:reset_sent')
+
                 except Exception as e:
                     print(f"[EMAIL ERROR] Failed: {str(e)}")
                     logger.error(f"Email failed for {user.email}: {str(e)}")
                     messages.error(request, f'Email send failed: {str(e)}')
-                    # Clean up cache on failure
-                    cache.delete(f'reset_code_{user.pk}')
+                    cache.delete(f'reset_code_{user.pk}')  # Clean up cache on failure
+
             except User.DoesNotExist:
                 messages.error(request, 'No account found with this email. Please sign up.')
         else:
@@ -216,6 +206,7 @@ def reset(request):
         form = PasswordResetForm()
 
     return render(request, 'player/reset.html', {'form': form})
+
 
 
 def reset_sent(request):
