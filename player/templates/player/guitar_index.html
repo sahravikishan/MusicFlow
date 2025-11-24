@@ -1,10 +1,849 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MusicFlow - Guitar Music Generator</title>
+    <link rel="icon" href="{% static '/images/favicon.jpg' %}" type="image/jpg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/guitar_style.css' %}">
+    <style>
+        /* Navbar Styles */
+        .top-navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 70px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 700;
+            transition: transform 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            transform: scale(1.05);
+            color: white;
+        }
+
+        .navbar-brand i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar-center {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link-item {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link-item:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link-item.active {
+            color: white;
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .nav-link-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 2px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .navbar-user {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-user:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .navbar-user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.9rem;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .navbar-user-name {
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .navbar-menu-toggle {
+            display: none;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-menu-toggle:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-menu-toggle i {
+            font-size: 1.2rem;
+        }
+
+        /* Adjust body and content for navbar */
+        body {
+            padding-top: 70px;
+        }
+
+        .title-bar {
+            top: 70px;
+        }
+
+        .sidebar {
+            top: 70px;
+            height: calc(100vh - 70px);
+        }
+
+        .main-content {
+            margin-top: 0;
+        }
+
+        /* Content Sections */
+        .content-section {
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar-center {
+                display: none;
+            }
+
+            .navbar-menu-toggle {
+                display: block;
+            }
+
+            .top-navbar {
+                padding: 0 1rem;
+            }
+
+            .navbar-user-name {
+                display: none;
+            }
+
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .navbar-brand i {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Notification Badge */
+        .notification-badge {
+            position: relative;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .notification-badge:hover {
+            color: white;
+        }
+
+        .notification-badge .badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            font-size: 0.65rem;
+            padding: 2px 5px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-$END$
+    <!-- Top Navbar -->
+    <nav class="top-navbar">
+        <a href="{% url 'player:guitar_index' %}" class="navbar-brand">
+            <i class="fas fa-guitar"></i>
+            <span>MusicFlow</span>
+        </a>
+
+        <div class="navbar-center">
+            <a href="#" class="nav-link-item" onclick="switchSection('home'); return false;">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <!--
+            <a href="{% url 'player:guitar_acoustic' %}" class="nav-link-item">
+                <i class="fas fa-guitar"></i> Guitars
+            </a>
+            -->
+            <a href="{% url 'player:guitar_feature_info' %}" class="nav-link-item">
+                <i class="fas fa-info-circle"></i> Features
+            </a>
+            <a href="#profile" class="nav-link-item" onclick="switchSection('profile'); return false;">
+                <i class="fas fa-user"></i> Profile
+            </a>
+
+            <a href="#settings" class="nav-link-item" onclick="switchSection('settings'); return false;">
+                <i class="fas fa-cog"></i> Settings
+            </a>
+        </div>
+
+        <!--
+        <div class="navbar-right">
+            <div class="notification-badge">
+                <i class="fas fa-bell"></i>
+                <span class="badge">3</span>
+            </div>
+            -->
+
+            <div class="navbar-user" onclick="toggleSidebar()">
+                <div class="navbar-user-avatar" id="navbarAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <span class="navbar-user-name" id="navbarUserName">Guest User</span>
+                <i class="fas fa-chevron-down" style="color: rgba(255,255,255,0.6); font-size: 0.8rem;"></i>
+            </div>
+
+            <button class="navbar-menu-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Title Bar (kept for compatibility) -->
+    <div class="title-bar" style="display: none;">
+        <div class="menu-toggle" id="menuToggle">
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Sidebar -->
+    <div class="sidebar collapsed" id="sidebar">
+        <div class="sidebar-header">
+            <div class="user-profile">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <h5 class="user-name">Guest User</h5>
+                    <p class="user-email">[email&#160;protected]</p>
+                    <span class="user-status">Online</span>
+                </div>
+            </div>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="#" class="sidebar-menu-item" data-section="home" onclick="switchSection('home'); return false;">
+                <div class="menu-icon"><i class="fas fa-home"></i></div>
+                <span>Home</span>
+                <div class="menu-indicator"></div>
+            </a>
+            <a href="#profile" class="sidebar-menu-item" data-section="profile" onclick="switchSection('profile'); return false;">
+                <div class="menu-icon"><i class="fas fa-user-circle"></i></div>
+                <span>Profile</span>
+                <div class="menu-indicator"></div>
+            </a>
+
+            <div class="menu-divider">
+                <span>Guitar Types</span>
+            </div>
+
+            <a href="{% url 'player:guitar_acoustic' %}" class="sidebar-menu-item">
+                <div class="menu-icon acoustic"><i class="fas fa-guitar"></i></div>
+                <span>Acoustic Guitar</span>
+            </a>
+            <a href="{% url 'player:guitar_electric' %}" class="sidebar-menu-item">
+                <div class="menu-icon electric"><i class="fas fa-bolt"></i></div>
+                <span>Electric Guitar</span>
+            </a>
+            <a href="{% url 'player:guitar_classical' %}" class="sidebar-menu-item">
+                <div class="menu-icon classical"><i class="fas fa-music"></i></div>
+                <span>Classical Guitar</span>
+            </a>
+            <a href="{% url 'player:guitar_bass' %}" class="sidebar-menu-item">
+                <div class="menu-icon bass"><i class="fas fa-wave-square"></i></div>
+                <span>Bass Guitar</span>
+            </a>
+
+            <div class="menu-divider">
+                <span>Settings</span>
+            </div>
+
+            <a href="#settings" class="sidebar-menu-item" data-section="settings" onclick="switchSection('settings'); return false;">
+                <div class="menu-icon"><i class="fas fa-cog"></i></div>
+                <span>Settings</span>
+                <div class="menu-indicator"></div>
+            </a>
+            <a href="{% url 'player:logout' %}" class="sidebar-menu-item" onclick="return confirm('Log out?');">
+                <div class="menu-icon"><i class="fas fa-sign-out-alt"></i></div>
+                <span>Logout</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="mainContent">
+        <!-- Home Section -->
+        <div id="home-section" class="content-section active">
+            <!-- Simple Hero Section -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">MusicFlow</h1>
+                    <p class="hero-subtitle">Create beautiful guitar compositions</p>
+                    <div class="hero-features">
+                        <span class="feature-tag">Real-time Fretboard</span>
+                        <span class="feature-tag">Audio Playback</span>
+                        <span class="feature-tag">Chord Detection</span>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="guitar-icon-container">
+                        <i class="fas fa-guitar"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Guitar Selection -->
+            <div class="guitar-selection">
+                <h2>Choose Your Guitar</h2>
+                <div class="guitar-grid">
+                    <div class="guitar-card acoustic" onclick="window.location.href='{% url 'player:guitar_acoustic' %}'">
+                        <div class="card-icon">
+                            <i class="fas fa-guitar"></i>
+                        </div>
+                        <h3>Acoustic</h3>
+                        <p>Warm, natural tones</p>
+                        <div class="card-specs">
+                            <span>6 Strings</span>
+                            <span>E-A-D-G-B-E</span>
+                        </div>
+                    </div>
+
+                    <div class="guitar-card electric" onclick="window.location.href='{% url 'player:guitar_electric' %}'">
+                        <div class="card-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h3>Electric</h3>
+                        <p>Bold, bright sounds</p>
+                        <div class="card-specs">
+                            <span>6 Strings</span>
+                            <span>E-A-D-G-B-E</span>
+                        </div>
+                    </div>
+
+                    <div class="guitar-card classical" onclick="window.location.href='{% url 'player:guitar_classical' %}'">
+                        <div class="card-icon">
+                            <i class="fas fa-music"></i>
+                        </div>
+                        <h3>Classical</h3>
+                        <p>Elegant melodies</p>
+                        <div class="card-specs">
+                            <span>6 Strings</span>
+                            <span>E-A-D-G-B-E</span>
+                        </div>
+                    </div>
+
+                    <div class="guitar-card bass" onclick="window.location.href='{% url 'player:guitar_bass' %}'">
+                        <div class="card-icon">
+                            <i class="fas fa-wave-square"></i>
+                        </div>
+                        <h3>Bass</h3>
+                        <p>Deep, powerful bass</p>
+                        <div class="card-specs">
+                            <span>4 Strings</span>
+                            <span>E-A-D-G</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Simple Features -->
+            <div class="features-section">
+                <h3>Features</h3>
+                <div class="features-grid">
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Note Input" data-link="{% url 'player:guitar_feature_info' %}#note-input">
+                        <i class="fas fa-keyboard"></i>
+                        <h4>Note Input</h4>
+                        <p>Add notes manually or through text parsing</p>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Visualization" data-link="{% url 'player:guitar_feature_info' %}#visualization">
+                        <i class="fas fa-eye"></i>
+                        <h4>Visualization</h4>
+                        <p>Interactive guitar fretboard display</p>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Playback" data-link="{% url 'player:guitar_feature_info' %}#playback">
+                        <i class="fas fa-play-circle"></i>
+                        <h4>Playback</h4>
+                        <p>Generate and play compositions</p>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Analysis" data-link="{% url 'player:guitar_feature_info' %}#analysis">
+                        <i class="fas fa-chart-line"></i>
+                        <h4>Analysis</h4>
+                        <p>Chord detection and note analysis</p>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Export" data-link="{% url 'player:guitar_feature_info' %}#export">
+                        <i class="fas fa-download"></i>
+                        <h4>Export</h4>
+                        <p>Save compositions in various formats</p>
+                    </div>
+                    <div class="feature-item" role="button" tabindex="0" aria-label="Feature: Customization" data-link="{% url 'player:guitar_feature_info' %}#themes">
+                        <i class="fas fa-palette"></i>
+                        <h4>Theme</h4>
+                        <p>Light and dark mode options</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Section -->
+        <div id="profile-section" class="content-section">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                    <p>Manage your personal information and upload your picture</p>
+                </div>
+
+                <div class="profile-content">
+                    <!-- Profile Picture Section -->
+                    <div class="profile-picture-section">
+                        <div class="profile-picture-container">
+                            {% if profile.profile_picture %}
+                                <img id="profilePicturePreview" src="{{ profile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                            {% else %}
+                                <img id="profilePicturePreview" src="https://via.placeholder.com/150?text=No+Image" alt="Profile Picture" class="profile-picture">
+                            {% endif %}
+                            <div class="profile-picture-overlay">
+                                <i class="fas fa-camera"></i>
+                            </div>
+                        </div>
+                        <input type="file" id="profilePictureInput" name="profile_picture" accept="image/*" style="display: none;">
+                        <button type="button" class="btn-picture-upload" onclick="document.getElementById('profilePictureInput').click()">
+                            <i class="fas fa-upload"></i> Upload Picture
+                        </button>
+                        <button type="button" class="btn-picture-remove" onclick="removeProfilePicture()">
+                            <i class="fas fa-trash"></i> Remove
+                        </button>
+                    </div>
+
+                    <form id="profileForm" method="post" action="{% url 'player:profile_update' %}" class="profile-form" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="firstName">First Name <span class="required">*</span></label>
+                                <input type="text" id="firstName" name="first_name" placeholder="Enter your first name" value="{{ profile.first_name|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="lastName">Last Name <span class="required">*</span></label>
+                                <input type="text" id="lastName" name="last_name" placeholder="Enter your last name" value="{{ profile.last_name|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email">Email Address <span class="required">*</span></label>
+                                <input type="email" id="email" name="email" placeholder="Enter your email" value="{{ user.email|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="phone">Phone Number <span class="required">*</span></label>
+                                <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" value="{{ profile.phone|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="profession">Profession</label>
+                                <input type="text" id="profession" name="profession" placeholder="e.g., Music Teacher, Recording Engineer" value="{{ profile.profession|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="genre">Favorite Genre</label>
+                                <select id="genre" name="genre">
+                                    <option value="">Select a genre</option>
+                                    <option value="rock" {% if profile.genre == 'rock' %}selected{% endif %}>Rock</option>
+                                    <option value="blues" {% if profile.genre == 'blues' %}selected{% endif %}>Blues</option>
+                                    <option value="jazz" {% if profile.genre == 'jazz' %}selected{% endif %}>Jazz</option>
+                                    <option value="classical" {% if profile.genre == 'classical' %}selected{% endif %}>Classical</option>
+                                    <option value="folk" {% if profile.genre == 'folk' %}selected{% endif %}>Folk</option>
+                                    <option value="metal" {% if profile.genre == 'metal' %}selected{% endif %}>Metal</option>
+                                    <option value="pop" {% if profile.genre == 'pop' %}selected{% endif %}>Pop</option>
+                                    <option value="country" {% if profile.genre == 'country' %}selected{% endif %}>Country</option>
+                                    <option value="other" {% if profile.genre == 'other' %}selected{% endif %}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="instrument">Favorite Instrument</label>
+                                <select id="instrument" name="instrument">
+                                    <option value="">Select an instrument</option>
+                                    <option value="acoustic" {% if profile.instrument == 'acoustic' %}selected{% endif %}>Acoustic Guitar</option>
+                                    <option value="electric" {% if profile.instrument == 'electric' %}selected{% endif %}>Electric Guitar</option>
+                                    <option value="classical" {% if profile.instrument == 'classical' %}selected{% endif %}>Classical Guitar</option>
+                                    <option value="bass" {% if profile.instrument == 'bass' %}selected{% endif %}>Bass Guitar</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="level">Skill Level</label>
+                                <select id="level" name="level">
+                                    <option value="">Select your level</option>
+                                    <option value="beginner" {% if profile.level == 'beginner' %}selected{% endif %}>Beginner</option>
+                                    <option value="intermediate" {% if profile.level == 'intermediate' %}selected{% endif %}>Intermediate</option>
+                                    <option value="advanced" {% if profile.level == 'advanced' %}selected{% endif %}>Advanced</option>
+                                    <option value="expert" {% if profile.level == 'expert' %}selected{% endif %}>Expert</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group full-width">
+                                <label for="bio">Bio</label>
+                                <textarea id="bio" name="bio" placeholder="Tell us about yourself, your musical journey, and what you love about guitar..." rows="5">{{ profile.bio|default:'' }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="profile-actions">
+                            <button type="submit" class="btn-primary no-ripple">
+                                <i class="fas fa-save"></i> Save Profile
+                            </button>
+                            <button type="reset" class="btn-secondary">
+                                <i class="fas fa-undo"></i> Clear Form
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Settings Section -->
+        <div id="settings-section" class="content-section">
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h2><i class="fas fa-cog"></i> Settings</h2>
+                    <p>Customize your experience</p>
+                </div>
+
+                <div class="settings-grid">
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-volume-up"></i>
+                            <h3>Audio Settings</h3>
+                        </div>
+                        <div class="setting-item">
+                            <label>Volume</label>
+                            <div class="volume-control">
+                                <input type="range" id="volumeSlider" min="0" max="100" value="50" class="slider">
+                                <span class="volume-value">50%</span>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>Audio Quality</label>
+                            <select class="setting-select">
+                                <option value="high">High Quality</option>
+                                <option value="medium" selected>Medium Quality</option>
+                                <option value="low">Low Quality</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-palette"></i>
+                            <h3>Display Settings</h3>
+                        </div>
+                        <div class="setting-item">
+                            <label>Light Mode</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="lightMode" class="toggle-input">
+                                <label for="lightMode" class="toggle-label"></label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>Show Note Names</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="showNoteNames" class="toggle-input" checked>
+                                <label for="showNoteNames" class="toggle-label"></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <div class="card-header">
+                            <i class="fas fa-bell"></i>
+                            <h3>Notifications</h3>
+                        </div>
+                        <div class="setting-item">
+                            <label>Sound Notifications</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="soundNotifications" class="toggle-input" checked>
+                                <label for="soundNotifications" class="toggle-label"></label>
+                            </div>
+                        </div>
+                        <div class="setting-item">
+                            <label>Auto-save Compositions</label>
+                            <div class="toggle-switch">
+                                <input type="checkbox" id="autoSave" class="toggle-input" checked>
+                                <label for="autoSave" class="toggle-label"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions">
+                    <button class="btn-primary" onclick="saveSettings()">Save Settings</button>
+                    <button class="btn-secondary" onclick="resetSettings()">Reset to Default</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        window.djangoData = {
+            csrfToken: "{{ csrf_token }}",
+            saveDashboardUrl: "{% url 'player:save_dashboard' %}",
+            profileUpdateUrl: "{% url 'player:profile_update' %}",
+            dashboard: {
+                notes: `{{ dashboard.notes|escapejs }}`,
+                theme: "{{ dashboard.page_theme|default:'dark' }}",
+                guitarType: "{{ dashboard.selected_guitar_type|default:'' }}"
+            },
+            profile: {
+                firstName: "{{ profile.first_name|escapejs }}",
+                lastName: "{{ profile.last_name|escapejs }}",
+                email: "{{ user.email|escapejs }}",
+                phone: "{{ profile.phone|escapejs }}",
+                profession: "{{ profile.profession|escapejs }}",
+                genre: "{{ profile.genre|escapejs }}",
+                instrument: "{{ profile.instrument|escapejs }}",
+                level: "{{ profile.level|escapejs }}",
+                bio: "{{ profile.bio|escapejs }}",
+                profilePictureUrl: "{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% endif %}"
+            }
+        };
+
+        // Django URL for JavaScript
+        const guitarIndexUrl = "{% url 'player:guitar_index' %}";
+        const guitarFeatureInfoUrl = "{% url 'player:guitar_feature_info' %}";
+
+        // Sync navbar avatar with profile picture
+        document.addEventListener('DOMContentLoaded', function() {
+            const navbarAvatar = document.getElementById('navbarAvatar');
+            const navbarUserName = document.getElementById('navbarUserName');
+            const profile = window.djangoData.profile;
+
+            // Update navbar user name
+            if (profile.firstName && profile.lastName) {
+                navbarUserName.textContent = `${profile.firstName} ${profile.lastName}`;
+            }
+
+            // Update navbar avatar if profile picture exists
+            if (profile.profilePictureUrl) {
+                navbarAvatar.style.backgroundImage = `url(${profile.profilePictureUrl})`;
+                navbarAvatar.style.backgroundSize = 'cover';
+                navbarAvatar.style.backgroundPosition = 'center';
+                navbarAvatar.innerHTML = '';
+            }
+
+            // Sync sidebar avatar with profile picture on load/refresh
+            const sidebarAvatar = document.getElementById('userAvatar');
+            if (profile.profilePictureUrl) {
+                sidebarAvatar.style.backgroundImage = `url(${profile.profilePictureUrl})`;
+                sidebarAvatar.style.backgroundSize = 'cover';
+                sidebarAvatar.style.backgroundPosition = 'center';
+                sidebarAvatar.innerHTML = '';
+            } else {
+                sidebarAvatar.innerHTML = '<i class="fas fa-user"></i>';
+            }
+
+            // Initialize active states based on current path
+            initActiveStates();
+        });
+    </script>
+    <script src="{% static 'js/guitar_script.js' %}"></script>
+
+    <!-- Live Image Preview + Sidebar Sync -->
+    <script>
+        document.getElementById("profilePictureInput").addEventListener("change", function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Preview in profile page
+                document.getElementById("profilePicturePreview").src = e.target.result;
+                // Preview in sidebar
+                document.getElementById("userAvatar").style.backgroundImage = `url('${e.target.result}')`;
+                document.getElementById("userAvatar").innerHTML = "";
+                // Preview in navbar
+                document.getElementById("navbarAvatar").style.backgroundImage = `url('${e.target.result}')`;
+                document.getElementById("navbarAvatar").style.backgroundSize = 'cover';
+                document.getElementById("navbarAvatar").style.backgroundPosition = 'center';
+                document.getElementById("navbarAvatar").innerHTML = "";
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function removeProfilePicture() {
+            document.getElementById("profilePicturePreview").src = "https://via.placeholder.com/150?text=No+Image";
+            document.getElementById("userAvatar").style.backgroundImage = "";
+            document.getElementById("userAvatar").innerHTML = '<i class="fas fa-user"></i>';
+            document.getElementById("navbarAvatar").style.backgroundImage = "";
+            document.getElementById("navbarAvatar").innerHTML = '<i class="fas fa-user"></i>';
+            document.getElementById("profilePictureInput").value = "";
+        }
+    </script>
+
+    <script>
+        // Function to initialize active states based on URL path
+        function initActiveStates() {
+            const currentPath = window.location.pathname;
+
+            // Remove all active classes first
+            document.querySelectorAll('.nav-link-item, .sidebar-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            // For full page navigations (e.g., Features)
+            if (currentPath === guitarFeatureInfoUrl) {
+                const featuresLink = document.querySelector(`.nav-link-item[href="${guitarFeatureInfoUrl}"]`);
+                if (featuresLink) featuresLink.classList.add('active');
+                return; // Early return since not on index page
+            }
+
+            // Assume on index page (home), activate home section and links
+            switchSection('home');
+        }
+
+        // Unified section switching function
+        function switchSection(sectionName) {
+            // Hide all content sections
+            document.querySelectorAll('.content-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+
+            // Show the target section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            // Update navbar active (only for sections like profile/settings/home; features handled by path on load)
+            document.querySelectorAll('.nav-link-item').forEach(link => {
+                link.classList.remove('active');
+            });
+            if (sectionName === 'home') {
+                const homeLink = document.querySelector('.nav-link-item[onclick*="switchSection(\'home\'"]');
+                if (homeLink) homeLink.classList.add('active');
+            } else {
+                const navbarLink = document.querySelector(`.nav-link-item[href="#${sectionName}"]`);
+                if (navbarLink) navbarLink.classList.add('active');
+            }
+
+            // Update sidebar active
+            document.querySelectorAll('.sidebar-menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            const sidebarItem = document.querySelector(`.sidebar-menu-item[data-section="${sectionName}"]`);
+            if (sidebarItem) {
+                sidebarItem.classList.add('active');
+            }
+
+            // Close sidebar on mobile if open (optional enhancement)
+            const sidebar = document.getElementById('sidebar');
+            if (window.innerWidth <= 768 && !sidebar.classList.contains('collapsed')) {
+                toggleSidebar();
+            }
+        }
+
+        // Alias for backward compatibility
+        function showSection(section) {
+            switchSection(section);
+        }
+
+        // Set active based on URL path for non-section pages (e.g., features) - now handled in initActiveStates
+        document.addEventListener('DOMContentLoaded', function() {
+            // initActiveStates already called above
+        });
+    </script>
 </body>
 </html>
+

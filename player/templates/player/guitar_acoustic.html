@@ -1,10 +1,490 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}" type="image/jpg">
+    <title>Acoustic Guitar - MusicFlow</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{% static 'css/guitar_acoustic.css' %}" rel="stylesheet">
 </head>
-<body>
 
+<body>
+    <!-- ================= HEADER ================= -->
+    <header class="header-section">
+        <div class="container">
+            <div class="d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center header-content-animate">
+                    <i class="fas fa-guitar fs-2 me-3 guitar-icon-pulse"></i>
+                    <div>
+                        <h1 class="h2 mb-1">Acoustic Guitar</h1>
+                        <p class="mb-0 opacity-75">Warm, natural tones with rich harmonics</p>
+                    </div>
+                </div>
+                <a href="{% url 'player:guitar_index' %}" class="nav-link-home">
+                    <i class="fas fa-home"></i> Back to Home
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ================= MAIN CONTENT ================= -->
+    <main class="container my-5">
+
+        <!-- ===== TABS ===== -->
+        <ul class="nav nav-tabs mb-4 tabs-animate" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#composer" type="button" role="tab">
+                    <i class="fas fa-list-music me-2"></i>Composer
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#fretboard" type="button" role="tab">
+                    <i class="fas fa-th me-2"></i>Fretboard
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab">
+                    <i class="fas fa-chart-bar me-2"></i>Analysis
+                </button>
+            </li>
+        </ul>
+
+        <!-- ===== TAB CONTENT ===== -->
+        <div class="tab-content" id="main-tab-content">
+
+            <!-- ================= COMPOSER TAB ================= -->
+            <div class="tab-pane fade show active" id="composer" role="tabpanel">
+                <div class="row g-4">
+
+                    <!-- ===== LEFT COLUMN ===== -->
+                    <div class="col-lg-8">
+
+                        <!-- === NOTE INPUT === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.1s">
+                            <div class="card-header section-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-music me-2"></i>Note Input</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-3">Add individual notes or paste a sequence</p>
+
+                                <!-- Manual Input -->
+                                <div class="row g-2 mb-3">
+                                    <div class="col-3">
+                                        <label for="noteName" class="form-label">Note</label>
+                                        <select id="noteName" class="form-select">
+                                            <option value="C">C</option>
+                                            <option value="C#">C#</option>
+                                            <option value="D">D</option>
+                                            <option value="D#">D#</option>
+                                            <option value="E">E</option>
+                                            <option value="F">F</option>
+                                            <option value="F#">F#</option>
+                                            <option value="G">G</option>
+                                            <option value="G#">G#</option>
+                                            <option value="A">A</option>
+                                            <option value="A#">A#</option>
+                                            <option value="B">B</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-2">
+                                        <label for="octave" class="form-label">Octave</label>
+                                        <input type="number" id="octave" class="form-control" min="1" max="6" value="3">
+                                    </div>
+
+                                    <div class="col-3">
+                                        <label for="duration" class="form-label">Duration</label>
+                                        <div class="position-relative" style="height: 38px;">
+                                            <select id="duration" class="form-select w-100 h-100">
+                                                <option value="whole">Whole</option>
+                                                <option value="half">Half</option>
+                                                <option value="quarter" selected>Quarter</option>
+                                                <option value="eighth">Eighth</option>
+                                                <option value="sixteenth">Sixteenth</option>
+                                                <option value="custom">Custom</option>
+                                            </select>
+                                            <input type="number" id="customDuration" class="form-control w-100 h-100 position-absolute top-0 start-0" placeholder="Enter beats" style="display:none; z-index:2; background:#fff;" min="0.1" step="0.1">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-4 d-flex align-items-end">
+                                        <button class="btn btn-primary w-100" onclick="addNote()">
+                                            <i class="fas fa-plus me-2"></i>Add Note
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Input -->
+                                <div class="mb-3">
+                                    <label for="quickInput" class="form-label">Quick Input</label>
+                                    <div class="input-group">
+                                        <input type="text" id="quickInput" class="form-control" placeholder="e.g., &quot;C3 D3 E3&quot; or &quot;G3-quarter A3-half">
+                                        <button class="btn btn-outline-primary" onclick="parseNotes()">Parse</button>
+                                    </div>
+                                </div>
+
+                                <!-- Current Notes -->
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <label class="form-label mb-0">Current Notes (<span id="noteCount">0</span>)</label>
+                                        <button id="clearNotes" class="btn btn-outline-secondary btn-sm" style="display:none;" onclick="clearAllNotes()">
+                                            Clear All
+                                        </button>
+                                    </div>
+                                    <div id="notesDisplay" class="notes-container">
+                                        <p class="text-muted mb-0">No notes added yet</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- === CHORD PROGRESSION === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.2s">
+                            <div class="card-header section-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-guitar me-2"></i>Chord Progression</h5>
+                            </div>
+                            <div class="card-body">
+                                <p class="text-muted small mb-3">Build your chord sequence</p>
+                                <div id="chordsContainer" class="chords-display">
+                                    <p class="text-muted mb-0">No chords added yet</p>
+                                </div>
+                                <button class="btn btn-outline-primary w-100 mt-3" onclick="addChord()">
+                                    <i class="fas fa-plus me-2"></i>Add Chord
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- === CAPO POSITION === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.3s">
+                            <div class="card-header section-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-hand-paper me-2"></i>Capo Position</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="capoPosition" class="form-label">Capo Fret Position</label>
+                                    <select id="capoPosition" class="form-select">
+                                        <option value="0" selected>No Capo (Free String)</option>
+                                        <option value="1">1st Fret</option>
+                                        <option value="2">2nd Fret</option>
+                                        <option value="3">3rd Fret</option>
+                                        <option value="4">4th Fret</option>
+                                        <option value="5">5th Fret</option>
+                                        <option value="6">6th Fret</option>
+                                        <option value="7">7th Fret</option>
+                                        <option value="8">8th Fret</option>
+                                        <option value="9">9th Fret</option>
+                                        <option value="10">10th Fret</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- === STRUMMING PATTERN === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.4s">
+                            <div class="card-header section-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-drum me-2"></i>Strumming Pattern</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <label for="strummingPattern" class="form-label">Pattern</label>
+                                    <select id="strummingPattern" class="form-select">
+                                        <option value="">Select a pattern</option>
+                                        <option value="Down Down Up Up Down Up">D-D-U-U-D-U</option>
+                                        <option value="Down Down Up Down Up">D-D-U-D-U</option>
+                                        <option value="Down Up Down Up Down Up">D-U-D-U-D-U</option>
+                                        <option value="Fingerpicking">Fingerpicking</option>
+                                        <option value="Custom">Custom</option>
+                                    </select>
+                                </div>
+
+                                <div id="customPatternContainer" style="display: none;">
+                                    <label for="customPattern" class="form-label">Custom Pattern</label>
+                                    <input type="text" id="customPattern" class="form-control" placeholder="e.g., D DU UDU">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== RIGHT COLUMN ===== -->
+                    <div class="col-lg-4">
+
+                        <!-- === SETTINGS === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.5s">
+                            <div class="card-header section-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-sliders-h me-2"></i>Settings
+                                </h5>
+                            </div>
+
+                            <div class="card-body">
+                                <!-- Tempo (BPM) -->
+                                <div class="mb-4">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <label class="form-label mb-0">Tempo (BPM)</label>
+                                        <span class="value-badge" id="bpmValue">120</span>
+                                    </div>
+                                    <input type="range" class="form-range custom-range" id="bpmSlider" min="40" max="200" value="120">
+                                    <div class="d-flex justify-content-between text-muted small mb-1">
+                                        <span>Slow</span>
+                                        <span>Fast</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div id="bpmProgress" class="progress-bar-fill" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+
+                                <hr>
+
+                                <!-- Key -->
+                                <div class="mb-3">
+                                    <label for="keySelect" class="form-label">Key</label>
+                                    <select id="keySelect" class="form-select custom-select shadow-sm">
+                                        <option value="">Auto Detect</option>
+                                        <option value="C">C Major</option>
+                                        <option value="G">G Major</option>
+                                        <option value="D">D Major</option>
+                                        <option value="A">A Major</option>
+                                        <option value="E">E Major</option>
+                                        <option value="Am">A Minor</option>
+                                        <option value="Em">E Minor</option>
+                                        <option value="Dm">D Minor</option>
+                                    </select>
+                                </div>
+
+                                <!-- Time Signature -->
+                                <div class="mb-3">
+                                    <label for="timeSignature" class="form-label">Time Signature</label>
+                                    <select id="timeSignature" class="form-select custom-select shadow-sm">
+                                        <option value="4/4">4/4 (Common)</option>
+                                        <option value="3/4">3/4 (Waltz)</option>
+                                        <option value="6/8">6/8</option>
+                                        <option value="2/4">2/4</option>
+                                    </select>
+                                </div>
+
+                                <!-- Duration -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <label class="form-label mb-0">Duration</label>
+                                        <span class="value-badge" id="durationValue">30s</span>
+                                    </div>
+                                    <input type="range" class="form-range custom-range" id="durationSlider" min="10" max="120" step="5" value="30">
+                                    <div class="progress-bar-container">
+                                        <div id="durationProgress" class="progress-bar-fill" style="width: 25%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- === COMPOSITION INFO === -->
+                        <div class="card mb-4 card-slide-in" style="animation-delay: 0.6s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-info-circle me-2"></i>Composition Info</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <div class="stats-grid">
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="statNotes">0</div>
+                                        <div class="stat-label">Notes</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="statChords">0</div>
+                                        <div class="stat-label">Chords</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="statDuration">0:00</div>
+                                        <div class="stat-label">Duration</div>
+                                    </div>
+                                    <div class="stat-item">
+                                        <div class="stat-value" id="statKey">Auto</div>
+                                        <div class="stat-label">Key</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- === AUDIO PLAYER === -->
+                        <div class="card card-slide-in" style="animation-delay: 0.7s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">Audio Player</h5>
+                                <div class="mt-2">
+                                    <span class="badge bg-primary">Acoustic</span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+
+                                <!-- Progress Bar -->
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between text-muted small mb-1">
+                                        <span id="currentTime">0:00</span>
+                                        <span id="totalTime">0:00</span>
+                                    </div>
+                                    <div class="progress-bar-container">
+                                        <div id="progressBar" class="progress-bar-fill" style="width: 0%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Playback Controls -->
+                                <div class="mb-3">
+                                    <button id="generateBtn" class="btn btn-primary w-100 mb-2" disabled>
+                                        <i class="fas fa-play me-2"></i>Generate & Play
+                                    </button>
+                                    <button id="stopBtn" class="btn btn-outline-secondary w-100" disabled>
+                                        <i class="fas fa-stop"></i> Stop
+                                    </button>
+                                </div>
+
+                                <!-- Volume Control -->
+                                <div class="d-flex align-items-center mb-3">
+                                    <i class="fas fa-volume-up text-muted me-2"></i>
+                                    <input type="range" id="volumeSlider" class="form-range flex-grow-1" min="0" max="100" value="75">
+                                    <span class="text-muted small ms-2" id="volumeDisplay">75%</span>
+                                </div>
+
+                                <!-- Download Button -->
+                                <button id="downloadBtn" class="btn btn-outline-primary w-100" disabled>
+                                    <i class="fas fa-download me-2"></i>Download Audio
+                                </button>
+
+                                <!-- Empty State -->
+                                <div id="no-notes-message" class="text-center py-3 text-muted mt-3">
+                                    <p>Add some notes or chords to generate music</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= FRETBOARD TAB ================= -->
+            <div class="tab-pane fade" id="fretboard" role="tabpanel">
+                <div class="card card-fade-in">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">Fretboard Visualization</h5>
+                        <p id="capo-info" class="text-muted small mb-2">No capo - Frets relative to nut</p>
+                    </div>
+                    <div class="card-body">
+                        <div id="fretboardContainer" class="fretboard-scroll"></div>
+                        <div id="fretboardEmpty" class="empty-state">
+                            <i class="fas fa-th empty-icon"></i>
+                            <p>Add notes to see them on the fretboard</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= ANALYSIS TAB ================= -->
+            <div class="tab-pane fade" id="analysis" role="tabpanel">
+                <div class="row g-4">
+
+                    <!-- Composition Analysis -->
+                    <div class="col-md-6">
+                        <div class="card card-fade-in" style="animation-delay: 0.1s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-chart-bar me-2"></i>Composition Analysis</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="analysisContent">
+                                    <div class="analysis-row"><span>Detected Key</span><code id="detectedKey">C Major</code></div>
+                                    <div class="analysis-row"><span>Time Signature</span><code id="analysisTime">4/4</code></div>
+                                    <div class="analysis-row"><span>Tempo</span><code id="analysisTempo">120 BPM</code></div>
+                                    <div class="analysis-row"><span>Note Range</span><code id="noteRange">N/A</code></div>
+                                    <div class="analysis-row"><span>Total Beats</span><code id="totalBeats">0</code></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Detected Chords -->
+                    <div class="col-md-6">
+                        <div class="card card-fade-in" style="animation-delay: 0.2s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0"><i class="fas fa-th-large me-2"></i>Detected Chords</h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="detectedChords" class="chords-display">
+                                    <span class="chord-badge">N/A</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strumming Pattern -->
+                    <div class="col-md-6">
+                        <div class="card card-fade-in" style="animation-delay: 0.3s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-drum me-2"></i>Strumming Pattern
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="analysisPattern" class="text-muted">N/A</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notes Sequence -->
+                    <div class="col-md-6">
+                        <div class="card card-fade-in" style="animation-delay: 0.4s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-music me-2"></i>Notes Sequence
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="analysisNotes" class="text-muted">N/A</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Duration -->
+                    <div class="col-md-6">
+                        <div class="card card-fade-in" style="animation-delay: 0.5s">
+                            <div class="card-header">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-clock me-2"></i>Total Duration
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div id="analysisTotalDuration" class="text-muted">0:00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ================= TOAST ================= -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toastMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer-section">
+        <div class="container">
+            <div class="text-center">
+                <i class="fas fa-guitar me-2"></i>
+                <span>MusicFlow - Acoustic Guitar Generator</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ================= SCRIPTS ================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/guitar_acoustic.js' %}"></script>
 </body>
 </html>
+

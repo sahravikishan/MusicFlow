@@ -1,0 +1,107 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'images/favicon.jpg' %}" type="image/png">
+    <title>MusicFlow - Check Your Email</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reset_sent.css' %}">
+</head>
+
+<body class="reset-sent-page">
+    <!-- Decorative Elements -->
+    <div class="decorative-elements">
+        <div class="classical-ornament ornament-1">
+            <i class="fas fa-envelope-open"></i>
+        </div>
+        <div class="classical-ornament ornament-2">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div class="classical-ornament ornament-3">
+            <i class="fas fa-key"></i>
+        </div>
+    </div>
+
+    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center py-4">
+        <div class="row w-100 justify-content-center">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 col-xl-5">
+                <!-- Main Card Container -->
+                <div class="auth-card card border-0 shadow-lg">
+                    <div class="card-header text-center border-0 bg-transparent">
+                        <!-- Logo and Brand -->
+                        <div class="brand-section">
+                            <div style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: center; align-items: center; width: 90px; height: 90px; border-radius: 50%; background-color: #f8f9fa; margin: 0 auto; overflow: hidden; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border: 3px solid #d4af37;">
+                                    <img src="{% static 'images/MusicFlow_logo.jpg' %}" alt="MusicFlow Logo" style="object-fit: cover; width: 100%; height: 100%;" height="100" width="100" onerror="this.src='MusicFlow_logo.jpg'; this.onerror=null;">
+                                </div>
+                            </div>
+                            <h1 class="brand-title">MusicFlow</h1>
+                            <p class="brand-subtitle">Check Your Mailbox</p>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <!-- Messages -->
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+
+                        <div class="form-section text-center">
+                            <div class="section-header mb-4">
+                                <h2 class="form-title">Code Sent!</h2>
+                                <p class="form-subtitle">Please check your email for the 6-digit verification code. It's valid for 2 minutes.</p>
+                                <div class="email-icon mb-3">
+                                    <i class="fas fa-envelope fa-3x text-warning"></i>
+                                </div>
+                                <p class="check-inbox">Didn't receive it? Check spam/junk folder.</p>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-12">
+                                    <a href="{% url 'player:reset_confirm' %}" class="btn elegant-btn elegant-btn-primary w-100">
+                                        <i class="fas fa-arrow-right me-2"></i>
+                                        <span>I Have the Code</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="row mt-3">
+                                <div class="col-12 text-center">
+                                    <a href="{% url 'player:reset' %}" class="btn btn-link elegant-link">
+                                        <i class="fas fa-redo me-2"></i>Send New Code
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+</body>
+
+</html>
+

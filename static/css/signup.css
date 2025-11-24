@@ -1,0 +1,99 @@
+/* Signup Page Specific Styles */
+
+.signup-page {
+    background: var(--gradient-secondary);
+}
+
+.signup-page .classical-ornament {
+    color: var(--modern-secondary);
+}
+
+.signup-page .ornament-1 {
+    animation-delay: 0.5s;
+}
+
+.signup-page .ornament-2 {
+    animation-delay: 2s;
+}
+
+.signup-page .ornament-3 {
+    animation-delay: 3.5s;
+}
+
+/* Signup specific brand subtitle */
+.signup-page .brand-subtitle {
+    color: var(--modern-secondary);
+}
+
+/* Signup form enhancements */
+.signup-page .elegant-btn-success {
+    background: var(--gradient-secondary);
+    box-shadow: 0 4px 15px rgba(128, 0, 32, 0.4);
+}
+
+.signup-page .elegant-btn-success:hover {
+    box-shadow: 0 6px 20px rgba(128, 0, 32, 0.5);
+}
+
+/* Password Wrapper - Copied from main.css */
+.password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.password-wrapper .elegant-input {
+    padding-right: 3rem;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--classical-burgundy);
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+}
+
+.password-toggle:hover {
+    color: var(--classical-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.password-toggle:focus {
+    outline: 2px solid var(--classical-gold);
+    outline-offset: 2px;
+}
+
+.password-toggle i {
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+/* Hide Edge's built-in password reveal to avoid interference with custom toggle - Page-specific for signup */
+.signup-page input[type="password"]::-ms-reveal,
+.signup-page input[type="password"]::-ms-clear {
+    display: none !important;
+}
+
+/* Optional: Hide Chrome's built-in autofill/reveal if it causes issues (rare) - Page-specific for signup */
+.signup-page input[type="password"]::-webkit-contacts-auto-fill-button,
+.signup-page input[type="password"]::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}
+
