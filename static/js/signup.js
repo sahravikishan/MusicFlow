@@ -12,17 +12,28 @@ document.addEventListener('DOMContentLoaded', function() {
     const termsCheckbox = document.getElementById('accept_terms');
     const privacyCheckbox = document.getElementById('accept_privacy');
 
-    // Get CSRF token
+    // FIXED: Prioritize COOKIE (fresh) over hidden input (may be cached)
     function getCsrfToken() {
-        const token = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        // Parse cookie first
+        let token = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('csrftoken='))
+            ?.split('=')[1];
+
         if (!token) {
-            console.error('CSRF token not found in form');
-            if (window.Toast) {
-                window.Toast.error('CSRF token missing. Please refresh the page.');
-            }
+            // Fallback to hidden input
+            const input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            token = input?.value || '';
+        }
+
+        if (!token) {
+            console.error('❌ No CSRF token!');
+            if (window.Toast) window.Toast.error('🔒 Security error. Refresh page.');
             return '';
         }
-        return token.value;
+
+        console.log('✅ CSRF Token loaded');  // Debug
+        return token;
     }
 
     // Simple loading function
@@ -161,14 +172,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     field.parentElement.appendChild(feedback);
                 }
 
-                // FIXED: Collect ALL error messages for this field
+                // FIXED: Collect ALL error messages for this field (err is OBJECT {message: str} from Django as_json())
                 const fieldErrors = formErrors[fieldName];
                 let allErrorMessages = [];
 
                 if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
-                    // Collect all error messages for this field
-                    fieldErrors.forEach(err => {
-                        allErrorMessages.push(err.message || `${displayName} is invalid`);
+                    // Collect all error messages for this field (use err.message)
+                    fieldErrors.forEach(errObj => {
+                        allErrorMessages.push(errObj.message || `${displayName} is invalid`);
                     });
                 } else {
                     allErrorMessages.push(`${displayName} is invalid`);
@@ -231,15 +242,27 @@ document.addEventListener('DOMContentLoaded', function() {
         const submitBtn = this.querySelector('button[type="submit"]');
         const originalText = showLoading(submitBtn, 'Creating Account...');
         try {
-            const response = await fetch('/signup/', {
+            // Use this.action to respect the current URL/form action instead of hardcoded path
+            // Add X-CSRFToken header to prevent 403 errors
+            const response = await fetch(this.action, {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
+                    'X-CSRFToken': getCsrfToken()
                 }
             });
 
-            const data = await response.json();
+            let data;
+            const contentType = response.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                data = await response.json();
+            } else {
+                // If server returns HTML (error page), log it and throw error to trigger catch block
+                const text = await response.text();
+                console.error("Server returned non-JSON response:", text);
+                throw new Error(`Server error (${response.status}): The server encountered an internal error.`);
+            }
 
             if (data.success) {
                 // Show success toast
@@ -260,10 +283,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     // Build detailed error messages with field names - SHOW ALL ERRORS
                     Object.entries(errors).forEach(([fieldName, fieldErrors]) => {
                         const displayName = fieldNameMap[fieldName] || fieldName;
-                        fieldErrors.forEach(err => {
-                            // FIXED: Don't show "__all__" errors in toast
+                        fieldErrors.forEach(errObj => {
+                            // FIXED: Don't show "__all__" errors in toast; use errObj.message (object from Django as_json())
                             if (fieldName !== '__all__') {
-                                errorMessages.push(`${displayName}: ${err.message}`);
+                                errorMessages.push(`${displayName}: ${errObj.message}`);
                             }
                         });
                     });
@@ -277,7 +300,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             console.error('Signup failed:', error);
-            displayErrors(['Account creation failed. Please check your connection and try again.']);
+            // Show the actual error message if available, otherwise show generic message
+            displayErrors([error.message || 'Account creation failed. Please check your connection and try again.']);
         } finally {
             hideLoading(submitBtn, originalText);
         }

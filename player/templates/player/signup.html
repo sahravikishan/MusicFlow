@@ -82,7 +82,8 @@
                                 </div>
                             {% endif %}
 
-                            <form method="POST" id="signupForm" class="needs-validation" novalidate>
+                            <!-- FIXED: Explicit action to match Django URL pattern (includes trailing slash) -->
+                            <form method="POST" action="{% url 'player:signup' %}" id="signupForm" class="needs-validation" novalidate>
                                 {% csrf_token %}
                                 <div class="row mb-3">
                                     <div class="col-12">

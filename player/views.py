@@ -43,13 +43,35 @@ def index(request):
     return render(request, 'player/index.html')
 
 
+def _get_safe_profile_picture_url(profile):
+    """
+    Helper function to get profile picture URL only if file actually exists
+    """
+    if not profile.profile_picture:
+        return None
+
+    try:
+        # Check if file actually exists
+        if default_storage.exists(profile.profile_picture.name):
+            return profile.profile_picture.url
+        else:
+            # File doesn't exist, clear the database reference
+            logger.warning(f"Profile picture file missing: {profile.profile_picture.name}")
+            profile.profile_picture = None
+            profile.save()
+            return None
+    except Exception as e:
+        logger.error(f"Error checking profile picture: {e}")
+        return None
+
+
 def _refresh_profile_session(request, user):
     """
     Helper: ensure session contains profile_picture_url so templates have a reliable source.
     """
     try:
         profile, _ = Profile.objects.get_or_create(user=user)
-        request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
+        request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
     except Exception as e:
         logger.debug(f"_refresh_profile_session error: {e}")
         request.session['profile_picture_url'] = None
@@ -66,12 +88,13 @@ def guitar_index(request):
     dashboard, _ = Dashboard.objects.get_or_create(user=request.user)
 
     # Keep session in sync with profile picture (ensures persistence after login)
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
 
     return render(request, 'player/guitar_index.html', {
         'profile': profile,
         'dashboard': dashboard,
-        'user': request.user
+        'user': request.user,
+        'profile_picture_url': request.session.get('profile_picture_url'),
     })
 
 
@@ -84,11 +107,12 @@ def guitar_feature_info(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
 
     # Refresh session image
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
 
     return render(request, 'player/guitar_feature_info.html', {
         'profile': profile,
         'user': request.user,
+        'profile_picture_url': request.session.get('profile_picture_url'),
     })
 
 
@@ -96,7 +120,8 @@ def guitar_feature_info(request):
 def profile_update(request):
     user = request.user
     profile, created = Profile.objects.get_or_create(user=user)
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    # Use META for broader compatibility
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
     if request.method == 'POST':
         try:
@@ -134,34 +159,39 @@ def profile_update(request):
                 if new_pic:
                     logger.info(
                         f"*** UPLOAD RECEIVED: Filename={new_pic.name}, Size={new_pic.size} bytes, Content-Type={new_pic.content_type} ***")
+
                     # delete old file physically (if exists)
                     if profile.profile_picture:
                         try:
-                            default_storage.delete(profile.profile_picture.name)
+                            if default_storage.exists(profile.profile_picture.name):
+                                default_storage.delete(profile.profile_picture.name)
                         except Exception as e:
                             logger.debug(f"Could not delete old profile picture: {e}")
+
+                    # Save new file
                     profile.profile_picture = new_pic
-                    logger.info(
-                        f"*** ASSIGNING FILE: Will save to {profile.profile_picture.name} ***")  # This shows the path before save
+                    logger.info(f"*** ASSIGNING FILE: Will save to {profile.profile_picture.name} ***")
                     remove_pic = False  # cancel delete if new pic uploaded
 
             # If user clicked remove (and did not upload new one)
             if remove_pic:
                 if profile.profile_picture:
                     try:
-                        default_storage.delete(profile.profile_picture.name)
+                        if default_storage.exists(profile.profile_picture.name):
+                            default_storage.delete(profile.profile_picture.name)
                     except Exception as e:
                         logger.debug(f"Could not delete removed picture: {e}")
                 profile.profile_picture = None
 
             profile.save()
-            logger.info(
-                f"*** SAVE COMPLETE: File now at {profile.profile_picture.path if profile.profile_picture else 'NO FILE'} (exists: {os.path.exists(profile.profile_picture.path) if profile.profile_picture else 'N/A'}) ***")
+
+            # Verify file was actually saved and get safe URL
+            safe_url = _get_safe_profile_picture_url(profile)
+
+            logger.info(f"*** SAVE COMPLETE: Safe URL: {safe_url} ***")
+
             # Refresh session so subsequent page loads display the saved picture
-            try:
-                request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
-            except Exception:
-                request.session['profile_picture_url'] = None
+            request.session['profile_picture_url'] = safe_url
 
             logger.info(f"Profile updated for {user.username}: Bio='{profile.bio}', Level='{profile.level}'")
 
@@ -169,11 +199,11 @@ def profile_update(request):
                 return JsonResponse({
                     'success': True,
                     'message': 'Profile updated successfully!',
-                    'profile_picture_url': request.session.get('profile_picture_url'),
-                    'profile': {  # Optional: Return more for JS updates
+                    'image_url': safe_url,
+                    'profile_picture_url': safe_url,
+                    'profile': {
                         'firstName': profile.first_name,
                         'lastName': profile.last_name,
-
                     }
                 })
 
@@ -194,37 +224,45 @@ def profile_update(request):
 def guitar_acoustic(request):
     request.session['last_page'] = request.get_full_path()
     profile, created = Profile.objects.get_or_create(user=request.user)
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
-    return render(request, 'player/guitar_acoustic.html', {'profile': profile, 'user': request.user})
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
+    return render(request, 'player/guitar_acoustic.html', {'profile': profile, 'user': request.user,
+                                                           'profile_picture_url': request.session.get(
+                                                               'profile_picture_url')})
 
 
 @login_required
 def guitar_electric(request):
     request.session['last_page'] = request.get_full_path()
     profile, created = Profile.objects.get_or_create(user=request.user)
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
-    return render(request, 'player/guitar_electric.html', {'profile': profile, 'user': request.user})
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
+    return render(request, 'player/guitar_electric.html', {'profile': profile, 'user': request.user,
+                                                           'profile_picture_url': request.session.get(
+                                                               'profile_picture_url')})
 
 
 @login_required
 def guitar_classical(request):
     request.session['last_page'] = request.get_full_path()
     profile, created = Profile.objects.get_or_create(user=request.user)
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
-    return render(request, 'player/guitar_classical.html', {'profile': profile, 'user': request.user})
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
+    return render(request, 'player/guitar_classical.html', {'profile': profile, 'user': request.user,
+                                                            'profile_picture_url': request.session.get(
+                                                                'profile_picture_url')})
 
 
 @login_required
 def guitar_bass(request):
     request.session['last_page'] = request.get_full_path()
     profile, created = Profile.objects.get_or_create(user=request.user)
-    request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
-    return render(request, 'player/guitar_bass.html', {'profile': profile, 'user': request.user})
+    request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
+    return render(request, 'player/guitar_bass.html', {'profile': profile, 'user': request.user,
+                                                       'profile_picture_url': request.session.get(
+                                                           'profile_picture_url')})
 
 
 def login(request):
     # Check if it's an AJAX request
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+    is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
     if request.method == 'POST':
         logger.debug(f'POST data: {request.POST}')
@@ -259,7 +297,7 @@ def login(request):
                     # Refresh profile session immediately so UI has correct image
                     try:
                         profile, _ = Profile.objects.get_or_create(user=user)
-                        request.session['profile_picture_url'] = profile.profile_picture.url if profile.profile_picture else None
+                        request.session['profile_picture_url'] = _get_safe_profile_picture_url(profile)
                     except Exception as e:
                         logger.debug(f"Error setting session profile_picture_url on login: {e}")
                         request.session['profile_picture_url'] = None
@@ -323,21 +361,13 @@ def login(request):
 
 
 def signup(request):
-    # Check if it's an AJAX request
-    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
-
-    if request.method == 'POST':
-        logger.debug(f'POST data: {request.POST}')
-        if not check_rate_limit(request):
-            error_msg = 'Too many signup attempts. Please try again later.'
-            logger.error(error_msg)
-            if is_ajax:
-                return JsonResponse({'success': False, 'error': error_msg})
-            messages.error(request, error_msg)
-            return render(request, 'player/signup.html')
-
+    if request.method == 'GET':
+        form = SignupForm()
+        return render(request, 'player/signup.html', {'form': form})
+    else:
         form = SignupForm(request.POST)
-        logger.debug(f'Form valid: {form.is_valid()}')
+        # ADD THIS LINE: Define is_ajax here to detect AJAX requests
+        is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
 
         if form.is_valid():
             raw_terms = request.POST.get('accept_terms')
@@ -362,7 +392,9 @@ def signup(request):
                     user.save()
                     # Profile is automatically created by signal
                 logger.debug(f'User created: {user.username}')
-                auth_login(request, user)
+
+                # Fix: Specify backend for manual login after creation
+                auth_login(request, user, backend='django.contrib.auth.backends.ModelBackend')
 
                 # ensure session has profile info after signup
                 try:
@@ -399,9 +431,6 @@ def signup(request):
                 })
             messages.error(request, 'Please correct the errors below.')
             return render(request, 'player/signup.html', {'form': form})
-    else:
-        form = SignupForm()
-    return render(request, 'player/signup.html', {'form': form})
 
 
 def privacy(request):
@@ -580,5 +609,4 @@ def save_dashboard(request):
         return JsonResponse({"success": True, "message": "Dashboard saved successfully!"})
 
     return JsonResponse({"success": False, "message": "Invalid request"})
-
 
