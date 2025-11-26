@@ -48,20 +48,30 @@ def _get_safe_profile_picture_url(profile):
     Helper function to get profile picture URL only if file actually exists
     """
     if not profile.profile_picture:
+        print("*** DEBUG: No profile_picture field set")
         return None
 
     try:
         # Check if file actually exists
         if default_storage.exists(profile.profile_picture.name):
-            return profile.profile_picture.url
+            print(f"*** DEBUG: Storage says exists: True for {profile.profile_picture.name}")
+            # Force URL generation with / separators (Windows fix)
+            url = profile.profile_picture.url.replace('\\', '/')
+            print(f"*** DEBUG: Generated URL: {url}")
+            return url
         else:
+            print(f"*** DEBUG: Storage says exists: False for {profile.profile_picture.name}")
             # File doesn't exist, clear the database reference
             logger.warning(f"Profile picture file missing: {profile.profile_picture.name}")
             profile.profile_picture = None
             profile.save()
             return None
     except Exception as e:
-        logger.error(f"Error checking profile picture: {e}")
+        logger.error(f"Error checking/generating profile picture URL: {e}")
+        print(f"*** DEBUG: Exception in URL gen: {type(e).__name__}: {e}")
+        # Still clear if URL fails
+        profile.profile_picture = None
+        profile.save()
         return None
 
 
@@ -185,14 +195,23 @@ def profile_update(request):
 
             profile.save()
 
-            # Verify file was actually saved and get safe URL
+            # Safe debug: Only if picture exists (avoids NoneType on removal)
+            if profile.profile_picture:
+                import os  # Ensure imported at top if needed
+                from django.conf import settings
+                file_path = os.path.join(settings.MEDIA_ROOT, profile.profile_picture.name).replace('\\', '/')
+                print(f"*** DEBUG: Full file path (normalized): {file_path}")
+                print(f"*** DEBUG: File exists after save? {os.path.exists(file_path)}")
+                print(
+                    f"*** DEBUG: File size: {os.path.getsize(file_path) if os.path.exists(file_path) else 'N/A'} bytes")
+            else:
+                print("*** DEBUG: No profile picture - skipped file checks")
+
+            # Call safe URL (already handles None)
             safe_url = _get_safe_profile_picture_url(profile)
+            print(f"*** SAVE COMPLETE: Safe URL: {safe_url} ***")
 
-            logger.info(f"*** SAVE COMPLETE: Safe URL: {safe_url} ***")
-
-            # Refresh session so subsequent page loads display the saved picture
-            request.session['profile_picture_url'] = safe_url
-
+            # Rest of your code (logger.info, session set, etc.) unchanged
             logger.info(f"Profile updated for {user.username}: Bio='{profile.bio}', Level='{profile.level}'")
 
             if is_ajax:

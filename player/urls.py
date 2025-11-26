@@ -27,11 +27,5 @@ urlpatterns = [
     path('profile/update/', views.profile_update, name='profile_update'),
     path('guitar/feature-info/', views.guitar_feature_info, name='guitar_feature_info'),
     path("save-dashboard/", views.save_dashboard, name="save_dashboard"),
-
-
 ]
-
-# Serve media files in development
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
