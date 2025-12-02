@@ -1,0 +1,37 @@
+/* Reset Sent Page Specific Styles */
+
+.reset-sent-page {
+    background: linear-gradient(135deg, var(--classical-burgundy) 0%, var(--modern-success) 100%);
+}
+
+.reset-sent-page .classical-ornament {
+    color: var(--modern-success);
+}
+
+.reset-sent-page .ornament-1 {
+    animation-delay: 0.5s;
+}
+
+.reset-sent-page .ornament-2 {
+    animation-delay: 2s;
+}
+
+.reset-sent-page .ornament-3 {
+    animation-delay: 3.5s;
+}
+
+/* Reset sent specific brand subtitle */
+.reset-sent-page .brand-subtitle {
+    color: var(--modern-success);
+}
+
+.email-icon {
+    color: var(--modern-warning);
+}
+
+.check-inbox {
+    color: var(--classical-navy);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+

@@ -1,0 +1,1940 @@
+/* Modern Enhanced Guitar Style - Light Theme Default */
+/* This stylesheet defines a modern, responsive design for a guitar-themed web application.
+   It includes a fixed sidebar menu, hamburger toggle button, hero sections, cards for guitar selection,
+   feature grids, profile and settings forms, dark mode support, animations, and responsive behaviors.
+   Primary theme uses a purple-blue gradient; dark mode overrides for contrast. */
+
+/* Root CSS Variables - Defines global color scheme, backgrounds, transitions, and shadows for consistency across light/dark modes. */
+:root {
+    --primary-gradient: linear-gradient(135deg, #66eea 0%, #764ba2 100%); /* Main background and accent gradient (purple-blue). */
+    --menu-color: #4b4b4b; /* Base color for menu toggle border and hamburger lines (yellow). */
+    --menu-color-light: #969493; /* Lighter variant for hover/active states (orange). */
+    --menu-color-shadow: #727271; /* Shadow color for menu toggle depth (dark orange to match theme). */
+    --sidebar-bg-dark: #1a1a2e; /* Dark mode sidebar background. */
+    --sidebar-bg-light: rgba(245, 245, 253, 0.95); /* Light mode sidebar background with transparency. */
+    --sidebar-hover-dark: rgba(65, 64, 64, 0.05); /* Dark mode hover overlay for sidebar items. */
+    --sidebar-hover-light: rgba(53, 53, 53, 0.05); /* Light mode hover overlay for sidebar items. */
+    --text-primary: #333; /* Main text color for headings and body. */
+    --text-secondary: #666; /* Secondary text color for subtitles and muted elements. */
+    --text-muted: #999; /* Muted text for hints and low-priority info. */
+    --border-color: #e1e5e9; /* General border color for forms and dividers. */
+    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Default shadow for cards and elevated elements. */
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing transition for hovers and state changes. */
+}
+
+/* Global Reset - Removes default margins/padding and sets box-sizing for consistent layout calculations. */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body Styles - Sets full-viewport background gradient, font stack, text color, and prevents horizontal scroll. */
+body {
+    background: var(--primary-gradient);
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+    color: var(--text-primary);
+    overflow-x: hidden;
+}
+
+/* Modern Menu Toggle - Inspired by Uiverse Button */
+/* Fixed-position hamburger button for toggling the sidebar. Includes skew hover effect, scaling, and animation to X icon on active. */
+.menu-toggle {
+    position: fixed !important; /* Force fixed positioning to prevent scrolling with page content (common bug fix for viewport anchoring). */
+    top: 20px;
+    left: 20px;
+    width: 45px;
+    height: 45px;
+    background: transparent;
+    backdrop-filter: blur(1px); /* Blurs background for frosted glass effect. */
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 2000; /* Ensures it stays on top of other elements. */
+    transition: all 1000ms; /* Slow transition for dramatic hover/active effects. */
+    border: none;
+    outline: 2px solid var(--menu-color); /* Visible border for the button. */
+    position: relative;
+    overflow: hidden; /* Contains the skew pseudo-element. */
+}
+
+/* Pseudo-element for skew slide-in background effect on hover/active. */
+.menu-toggle::before {
+    content: "";
+    position: absolute;
+    left: -50px;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background-color: var(--menu-color);
+    transform: skewX(45deg); /* Creates diagonal slide effect. */
+    z-index: -1;
+    transition: width 1000ms; /* Matches button transition for sync. */
+}
+
+/* Hover state: Scales up, changes border color, adds shadow, and expands pseudo-element. */
+.menu-toggle:hover {
+    transform: scale(1.1);
+    outline: 2px solid var(--menu-color-light);
+    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+}
+
+.menu-toggle:hover::before {
+    width: 250%;
+}
+
+/* Active state: Updates border and shadow (no scale, as it's for open sidebar). Expands pseudo-element. */
+.menu-toggle.active {
+    outline: 2px solid var(--menu-color-light);
+    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+}
+
+.menu-toggle.active::before {
+    width: 250%;
+}
+
+/* Hamburger Icon Container - Relative positioning for absolute spans. */
+.hamburger {
+    width: 20px;
+    height: 16px;
+    position: relative;
+    transition: var(--transition);
+    z-index: 1;
+}
+
+/* Individual Hamburger Lines - Three horizontal spans that animate on hover/active. */
+.hamburger span {
+    display: block;
+    position: absolute;
+    height: 2px;
+    width: 100%;
+    background: var(--menu-color);
+    border-radius: 1px;
+    transition: all 1000ms; /* Slow for fluid animation. */
+}
+
+.hamburger span:nth-child(1) { top: 0; } /* Top line. */
+.hamburger span:nth-child(2) { top: 7px; } /* Middle line. */
+.hamburger span:nth-child(3) { top: 14px; } /* Bottom line. */
+
+/* Hover: Changes line color to white. */
+.menu-toggle:hover .hamburger span {
+    background: #ffffff;
+}
+
+/* Active: Changes line color to white. */
+.menu-toggle.active .hamburger span {
+    background: #ffffff;
+}
+
+/* Active Animation: Top line rotates to form X top. */
+.menu-toggle.active .hamburger span:nth-child(1) {
+    transform: rotate(45deg);
+    top: 7px;
+}
+
+/* Active Animation: Middle line fades out. */
+.menu-toggle.active .hamburger span:nth-child(2) {
+    opacity: 0;
+}
+
+/* Active Animation: Bottom line rotates to form X bottom. */
+.menu-toggle.active .hamburger span:nth-child(3) {
+    transform: rotate(-45deg);
+    top: 7px;
+}
+
+/* Dark Mode Menu Toggle - Overrides for dark theme compatibility. */
+.dark-mode .menu-toggle {
+    background: transparent;
+    outline: 2px solid var(--menu-color);
+}
+
+.dark-mode .menu-toggle::before {
+    background-color: var(--menu-color);
+}
+
+/* Dark Mode Hover: Includes scale and expansion. */
+.dark-mode .menu-toggle:hover {
+    transform: scale(1.1);
+    outline: 2px solid var(--menu-color-light);
+    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+}
+
+.dark-mode .menu-toggle:hover::before {
+    width: 250%;
+}
+
+/* Dark Mode Active: Border and shadow updates. */
+.dark-mode .menu-toggle.active {
+    outline: 2px solid var(--menu-color-light);
+    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+}
+
+.dark-mode .menu-toggle.active::before {
+    width: 250%;
+}
+
+/* Dark Mode Lines: Base color, hover/active white. */
+.dark-mode .menu-toggle .hamburger span {
+    background: var(--menu-color);
+}
+
+.dark-mode .menu-toggle:hover .hamburger span {
+    background: #ffffff;
+}
+
+.dark-mode .menu-toggle.active .hamburger span {
+    background: #ffffff;
+}
+
+/* Enhanced Sidebar - Light Theme Default */
+/* Fixed sidebar for navigation, slides in/out on toggle. Includes header, menu, and footer. */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 300px;
+    background: var(--sidebar-bg-light);
+    color: var(--text-primary);
+    overflow-y: auto; /* Scrollable if content overflows. */
+    z-index: 1000;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth slide animation. */
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1); /* Right-side shadow for depth. */
+    backdrop-filter: blur(20px); /* Frosted effect. */
+}
+
+/* Collapsed State: Slides off-screen to the left. */
+.sidebar.collapsed {
+    transform: translateX(-100%);
+}
+
+/* Sidebar Header - User profile section with avatar and info. */
+.sidebar-header {
+    padding: 4rem 1.5rem 2rem 1.5rem; /* Extra top padding to account for fixed toggle. */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Subtle divider. */
+}
+
+/* User Profile Layout - Flex row for avatar and text info. */
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* User Avatar - Circular gradient background or image, with hover scale. */
+.user-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    border: 3px solid rgba(255, 255, 255, 0.1); /* Subtle inner border. */
+    transition: var(--transition);
+}
+
+/* Avatar Image Override - Fits image to circle if present. */
+.user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+/* Aspect Ratio and Overflow - Ensures square/circular clipping. */
+.user-avatar, .profile-picture {
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+}
+
+/* Fallback Icon - Centers icon if no image. */
+.user-avatar i {
+    display: block;
+    width: 100%;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Show icon when no background image is set - CSS selectors for fallback display. */
+.user-avatar:not([style*="background-image"]) i,
+.user-avatar[style*="background-image: none"] i,
+.user-avatar[style*='background-image: ""'] i {
+    display: block;
+}
+
+/* Profile Picture - Larger version for profile page. */
+.profile-picture {
+    display: block;
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* Avatar Hover - Slight scale for interactivity. */
+.user-avatar:hover {
+    transform: scale(1.05);
+}
+
+/* User Info - Flex-grow for text beside avatar. */
+.user-info {
+    flex: 1;
+}
+
+/* User Name - Bold heading. */
+.user-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--text-primary);
+}
+
+/* User Email - Muted subtitle. */
+.user-email {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+/* User Status Badge - Green pill for online/active indicator. */
+.user-status {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+/* Enhanced Menu - Light Theme */
+/* Main menu container for sidebar navigation items. */
+.sidebar-menu {
+    padding: 1rem 0;
+}
+
+/* Menu Divider - Section headers like "Guitars" or "Settings". */
+.menu-divider {
+    padding: 1rem 1.5rem 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Sidebar Menu Item - Individual nav links with icon, text, and hover effects. */
+.sidebar-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    transition: var(--transition);
+    position: relative;
+    margin: 0.25rem 0.75rem;
+    border-radius: 8px;
+}
+
+/* Menu Item Hover - Background tint, lift effect, shadow. */
+.sidebar-menu-item:hover {
+    background: var(--sidebar-hover-light);
+    color: var(--text-primary);
+    text-decoration: none;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Menu Item Active Click - Quick scale feedback. */
+.sidebar-menu-item:active {
+    transform: translateY(-2px) scale(0.98);
+    transition: transform 0.1s ease;
+}
+
+/* Menu Item Active State - Background tint for current page. */
+.sidebar-menu-item.active {
+    background: var(--sidebar-hover-light);
+}
+
+/* Menu Icon - Circular icon container for each item. */
+.menu-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    transition: var(--transition);
+    background: rgba(0, 0, 0, 0.05); /* Subtle background. */
+}
+
+/* Icon Font Size and Color. */
+.menu-icon i {
+    font-size: 1.1rem;
+    color: var(--text-primary);
+}
+
+/* Guitar-Type Specific Icon Styles - Themed backgrounds and colors for acoustic/electric/etc. */
+.menu-icon.acoustic { background: rgba(212, 165, 116, 0.2); }
+.menu-icon.acoustic i { color: #d4a574; }
+.menu-icon.electric { background: rgba(74, 144, 226, 0.2); }
+.menu-icon.electric i { color: #4a90e2; }
+.menu-icon.classical { background: rgba(196, 69, 105, 0.2); }
+.menu-icon.classical i { color: #c44569; }
+.menu-icon.bass { background: rgba(52, 73, 94, 0.2); }
+.menu-icon.bass i { color: #34495e; }
+
+/* Active Indicator Dot - Small circle on right for current item. */
+.menu-indicator {
+    position: absolute;
+    right: 1rem;
+    width: 6px;
+    height: 6px;
+    background: #667eea;
+    border-radius: 50%;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.sidebar-menu-item.active .menu-indicator {
+    opacity: 1;
+}
+
+/* Sidebar Footer - Bottom section with quick stats. */
+.sidebar-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem;
+    border-top: 1px solid rgba(0, 0, 0, 0.1); /* Divider from menu. */
+}
+
+/* Quick Stats Layout - Flex wrap for small badges. */
+.quick-stats {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* Stat Item Badge - Small pill with icon and text (e.g., play count). */
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 0.8rem;
+}
+
+/* Dark Mode Styles - Global overrides for dark theme, applied via .dark-mode class on body. */
+.dark-mode {
+    background: #0f1419; /* Dark body background. */
+    color: #d3d3d3; /* Light text base. */
+}
+
+/* Dark Sidebar - Darker background and shadow. */
+.dark-mode .sidebar {
+    background: var(--sidebar-bg-dark);
+    color: #e6eef8;
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Header Divider. */
+.dark-mode .sidebar-header {
+    border-bottom: 1px solid rgba(230, 230, 230, 0.04);
+}
+
+/* Dark User Name. */
+.dark-mode .user-name {
+    color: #e6eef8;
+}
+
+/* Dark User Email. */
+.dark-mode .user-email {
+    color: rgba(230, 230, 230, 0.7);
+}
+
+/* Dark Menu Divider. */
+.dark-mode .menu-divider {
+    color: rgba(230, 230, 230, 0.5);
+}
+
+/* Dark Menu Item Text. */
+.dark-mode .sidebar-menu-item {
+    color: rgba(230, 230, 230, 0.88);
+}
+
+/* Dark Menu Hover - Darker tint, white text, deeper shadow. */
+.dark-mode .sidebar-menu-item:hover {
+    background: var(--sidebar-hover-dark);
+    color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Dark Active Menu Item. */
+.dark-mode .sidebar-menu-item.active {
+    background: var(--sidebar-hover-dark);
+    color: white;
+}
+
+/* Dark Icon Background. */
+.dark-mode .menu-icon {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* Dark Icon Color. */
+.dark-mode .menu-icon i {
+    color: #e6eef8;
+}
+
+/* Dark Themed Icons - Preserve guitar colors. */
+.dark-mode .menu-icon.acoustic i { color: #d4a574; }
+.dark-mode .menu-icon.electric i { color: #4a90e2; }
+.dark-mode .menu-icon.classical i { color: #c44569; }
+.dark-mode .menu-icon.bass i { color: #34495e; }
+
+/* Dark Indicator. */
+.dark-mode .menu-indicator {
+    background: #89a7ff;
+}
+
+/* Dark Main Content Text. */
+.dark-mode .main-content {
+    background: transparent;
+    color: #e6eef8;
+}
+
+/* Dark Footer Divider. */
+.dark-mode .sidebar-footer {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Dark Stat Background. */
+.dark-mode .stat-item {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Main Content - Pushes content right of sidebar, adjusts on collapse. */
+.main-content {
+    margin-left: 300px;
+    padding: 2rem;
+    transition: margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Syncs with sidebar slide. */
+    min-height: 100vh;
+    width: calc(100% - 300px);
+}
+
+/* Expanded Content - Full width when sidebar collapsed. */
+.main-content.expanded {
+    margin-left: 0;
+    width: 100%;
+}
+
+/* Content Sections - Hidden by default, fade in on active. */
+.content-section {
+    display: none;
+    animation: fadeIn 0.5s ease-out; /* Entrance animation. */
+    min-height: calc(100vh - 4rem); /* Fills viewport minus header/footer. */
+}
+
+.content-section.active {
+    display: block;
+}
+
+/* Simple Hero Section - Prominent intro card with title, subtitle, features, and icon. */
+.hero-section {
+    background: rgba(255, 255, 255, 0.95); /* Semi-transparent white for readability. */
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 3rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    min-height: 300px;
+}
+
+/* Hero Content Area - Text side. */
+.hero-content {
+    flex: 1;
+}
+
+/* Hero Title - Gradient text with glow animation. */
+.hero-title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+    animation: textGlow 3s ease-in-out infinite; /* Pulsing opacity for emphasis. */
+}
+
+/* Hero Subtitle - Lighter weight text. */
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+/* Hero Features - Tag pills. */
+.hero-features {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+/* Feature Tag - Gradient badge. */
+.feature-tag {
+    padding: 0.5rem 1rem;
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Hero Visual - Right-side icon container. */
+.hero-visual {
+    flex: 0 0 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Fade In Right Animation - For hero elements. */
+@keyframes fadeInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Guitar Icon Container - Large circular gradient icon. */
+.guitar-icon-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+}
+
+/* Simple Guitar Selection - Section for selecting guitar types with draggable cards. */
+.guitar-selection {
+    margin-bottom: 3rem;
+    animation: fadeIn 0.8s ease-out 0.3s backwards; /* Delayed fade in. */
+}
+
+/* Selection Heading - White text with shadow for contrast. */
+.guitar-selection h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    animation: slideInLeft 0.6s ease-out; /* Slide from left. */
+}
+
+/* Guitar Grid - Responsive grid for cards. */
+.guitar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Guitar Card - Interactive card for each guitar type. */
+.guitar-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 2px solid transparent;
+    box-shadow: var(--card-shadow);
+    animation: cardFadeIn 0.4s ease-out; /* Staggered entrance. */
+    position: relative;
+}
+
+/* Card Fade In Animation - Bottom-up reveal. */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Glowing Card State - Pulsing glow on selection. */
+.guitar-card.glowing {
+    animation: cardGlow 0.6s ease-out forwards;
+}
+
+/* Glow Animation - Scale and color-based shadow pulse. */
+@keyframes cardGlow {
+    0% {
+        box-shadow: var(--card-shadow);
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        box-shadow: 0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px rgba(0, 0, 0, 0.1);
+        transform: scale(1);
+    }
+}
+
+/* Glowing Colors - Match guitar themes. */
+.guitar-card.glowing.acoustic {
+    color: #d4a574;
+}
+
+.guitar-card.glowing.electric {
+    color: #4a90e2;
+}
+
+.guitar-card.glowing.classical {
+    color: #c44569;
+}
+
+.guitar-card.glowing.bass {
+    color: #34495e;
+}
+
+/* Card Hover - Lift and deeper shadow. */
+.guitar-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Dragging State - For drag-and-drop functionality. */
+.guitar-card.dragging {
+    opacity: 0.5;
+    transform: rotate(5deg);
+    z-index: 1000;
+}
+
+/* Drag Over State - Scale and gradient border. */
+.guitar-card.drag-over {
+    transform: scale(1.02);
+    border-color: var(--primary-gradient);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+}
+
+/* Themed Borders - Default borders for each guitar type. */
+.guitar-card.acoustic { border-color: #d4a574; }
+.guitar-card.electric { border-color: #4a90e2; }
+.guitar-card.classical { border-color: #c44569; }
+.guitar-card.bass { border-color: #34495e; }
+
+/* Card Icon - Central guitar icon. */
+.card-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy ease. */
+}
+
+/* Themed Icon Backgrounds and Colors. */
+.guitar-card.acoustic .card-icon { background: rgba(212, 165, 116, 0.2); color: #d4a574; }
+.guitar-card.electric .card-icon { background: rgba(74, 144, 226, 0.2); color: #4a90e2; }
+.guitar-card.classical .card-icon { background: rgba(196, 69, 105, 0.2); color: #c44569; }
+.guitar-card.bass .card-icon { background: rgba(52, 73, 94, 0.2); color: #34495e; }
+
+/* Icon Hover - Scale and rotate. */
+.guitar-card:hover .card-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+/* Glowing Icon Bounce. */
+.guitar-card.glowing .card-icon {
+    animation: iconBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Icon Bounce Keyframes. */
+@keyframes iconBounce {
+    0% { transform: scale(1) rotate(0deg); }
+    50% { transform: scale(1.3) rotate(10deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+/* Card Title. */
+.guitar-card h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* Card Description. */
+.guitar-card p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+/* Card Specs - Small tags for features like "6-string". */
+.card-specs {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.card-specs span {
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+/* Simple Features - Grid section for app features with expandable subcards. */
+.features-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    animation: fadeIn 0.8s ease-out 0.4s backwards; /* Delayed entrance. */
+}
+
+/* Features Heading. */
+.features-section h3 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 2rem;
+    color: var(--text-primary);
+}
+
+/* Features Grid - 3-column responsive. */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+/* Responsive Grid Adjustments. */
+@media (max-width: 1000px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+}
+
+/* Feature Item - Card with icon, title, desc, and hover subcard grid. */
+.feature-item {
+    padding: 1.25rem 1rem;
+    background: linear-gradient(180deg, rgba(102,126,234,0.04), rgba(198,198,220,0.02)); /* Subtle gradient. */
+    border-radius: 14px;
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    border-left: 4px solid rgba(102,126,234,0.0); /* Hidden accent border. */
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    min-height: 120px;
+    position: relative;
+}
+
+/* Feature Hover/Focus - Lift, shadow, accent border. */
+.feature-item:hover,
+.feature-item:focus {
+    transform: translateY(-6px);
+    box-shadow: 0 10px 30px rgba(40, 50, 90, 0.06);
+    border-left-color: rgba(102,126,234,0.35);
+    outline: none;
+}
+
+/* Focus Ring for Accessibility. */
+.feature-item:focus {
+    box-shadow: 0 10px 30px rgba(40,50,90,0.09), 0 0 0 4px rgba(102,126,234,0.08);
+}
+
+/* Slide In Up Animation - For staggered reveals. */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Pop In Animation - For icons or elements. */
+@keyframes popIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Active Press Feedback. */
+.feature-item:active {
+    transform: scale(0.98);
+    transition: transform 0.2s ease;
+}
+
+/* Feature Icon - Gradient circle. */
+.feature-item i {
+    font-size: 1.6rem;
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    margin-bottom: 0.25rem;
+}
+
+/* Subcards Grid - Hidden 3x3 overlay on hover/focus. */
+.feature-item .subcards {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.96);
+    box-shadow: 0 10px 30px rgba(20,30,60,0.06);
+    z-index: 40;
+    opacity: 0;
+    transform: scale(0.98) translateY(6px); /* Initial hidden state. */
+    pointer-events: none;
+    transition: opacity 220ms ease, transform 220ms ease, pointer-events 0ms 220ms;
+}
+
+/* Show Subcards on Hover/Focus/Open. */
+.feature-item:hover .subcards,
+.feature-item:focus-within .subcards,
+.feature-item.subcards-open .subcards {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+    transition: opacity 200ms ease, transform 200ms ease;
+}
+
+/* Individual Subcard - Mini clickable tiles in the grid. */
+.feature-item .subcard {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 0.5rem;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(250,250,250,0.98), rgba(240,240,245,0.95));
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 0.95rem;
+    border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 6px 18px rgba(20,30,60,0.03);
+    transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    text-align: center;
+}
+
+/* Subcard Hover/Focus. */
+.feature-item .subcard:hover,
+.feature-item .subcard:focus {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 34px rgba(20,30,60,0.09);
+    background: white;
+}
+
+/* Dim Main Content When Subcards Open. */
+.feature-item.subcards-open > :not(.subcards) {
+    opacity: 0.08;
+    transition: opacity 200ms ease;
+    pointer-events: none;
+}
+
+/* Fade Up Animation - For sub-elements. */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Reduced Motion Support - Disables animations for accessibility. */
+@media (prefers-reduced-motion: reduce) {
+    .feature-item, .feature-item .subcards, .feature-summary-card, .entry-card { transition: none !important; animation: none !important; }
+}
+
+/* Icon Pulse Animation - For emphasis. */
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Feature Title. */
+.feature-item h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+/* Feature Description. */
+.feature-item p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* Enhanced Profile Section - Centered form for user profile editing. */
+.profile-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: var(--card-shadow);
+    max-width: 800px;
+    margin: 0 auto; /* Centers on page. */
+}
+
+/* Profile Header - Centered title and subtitle with divider. */
+.profile-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.profile-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.profile-header p {
+    color: var(--text-secondary);
+}
+
+/* Profile Picture Section - Upload area with preview. */
+.profile-picture-section {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: rgba(102, 126, 234, 0.05); /* Accent background. */
+    border-radius: 15px;
+}
+
+/* Picture Container - Flex for centering. */
+.profile-picture-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    margin-bottom: 1.5rem !important;
+}
+
+/* Profile Picture - Bordered circular image. */
+.profile-picture {
+    display: block !important;
+    margin: 0 auto !important;
+    width: 150px !important;
+    height: 150px !important;
+    border-radius: 50%;
+    border: 5px solid #667eea; /* Gradient border. */
+    object-fit: cover;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    transition: var(--transition);
+}
+
+.profile-picture:hover {
+    transform: scale(1.05);
+    box-shadow: 0 10px 35px rgba(102, 126, 234, 0.4);
+}
+
+/* Overlay - Hidden by default for upload. */
+.profile-picture-overlay {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+/* Upload/Remove Buttons - Styled for actions. */
+.btn-picture-upload,
+.btn-picture-remove {
+    display: inline-block;
+    margin: 0 0.5rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+    font-size: 0.95rem;
+}
+
+/* Upload Button - Gradient primary. */
+.btn-picture-upload {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-picture-upload:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+}
+
+/* Remove Button - Red destructive. */
+.btn-picture-remove {
+    background: #f44336;
+    color: white;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.3);
+}
+
+.btn-picture-remove:hover {
+    background: #da190b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(244, 67, 54, 0.4);
+}
+
+/* Required Field Indicator. */
+.required {
+    color: #f44336;
+}
+
+/* Upload Hint Text. */
+.upload-hint {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+}
+
+/* Form Section - Grouped fields with heading. */
+.form-section {
+    margin-bottom: 2rem;
+}
+
+.form-section h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1); /* Accent underline. */
+}
+
+/* Form Row - Responsive grid for fields. */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Form Group - Label + input wrapper. */
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1; /* Spans full row for textareas. */
+}
+
+/* Form Label. */
+.form-group label {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Form Inputs - Unified styling for text, select, textarea. */
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: var(--transition);
+    background: white;
+}
+
+/* Input Focus - Blue ring. */
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Form Actions - Button row. */
+.form-actions,
+.profile-actions {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    margin-top: 1.25rem !important;
+    width: 100% !important;
+}
+
+/* Primary/Secondary Buttons - Base styles. */
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    font-size: 0.9rem;
+}
+
+/* Primary Button - Gradient fill. */
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Secondary Button - Outline style. */
+.btn-secondary {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+    color: var(--text-primary);
+}
+
+/* Enhanced Settings Section - Grid of cards for app settings like volume, theme. */
+.settings-container {
+    max-width: 1000px;
+    margin: 0 auto; /* Centers. */
+}
+
+/* Settings Header - Centered intro. */
+.settings-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+}
+
+.settings-header h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.settings-header p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* Settings Grid - Responsive cards. */
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+/* Settings Card - Individual setting group. */
+.settings-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--card-shadow);
+    transition: var(--transition);
+}
+
+.settings-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Card Header - Icon + title with divider. */
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header i {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: var(--primary-gradient);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.card-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Setting Item - Row for label + control (slider/toggle). */
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0;
+}
+
+.setting-item:last-child {
+    margin-bottom: 0;
+}
+
+.setting-item label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+}
+
+/* Volume Control - Flex with slider and value display. */
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+    max-width: 200px;
+}
+
+/* Custom Slider Track. */
+.slider {
+    flex: 1;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-color);
+    outline: none;
+    -webkit-appearance: none;
+}
+
+/* Slider Thumb - Gradient circle. */
+.slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Volume Display. */
+.volume-value {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    min-width: 35px;
+}
+
+/* Toggle Switch - Custom checkbox for on/off. */
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #ccc;
+    border-radius: 26px;
+    transition: var(--transition);
+}
+
+.toggle-label:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: var(--transition);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Checked State - Gradient fill, slide thumb right. */
+.toggle-input:checked + .toggle-label {
+    background: var(--primary-gradient);
+}
+
+.toggle-input:checked + .toggle-label:before {
+    transform: translateX(24px);
+}
+
+/* Setting Select Dropdown. */
+.setting-select {
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: white;
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    min-width: 150px;
+    transition: var(--transition);
+}
+
+.setting-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+/* Settings Action Buttons. */
+.settings-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+/* Animations - Shared keyframes for various effects. */
+/* General Fade In - Bottom-up opacity. */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Content Section Transitions - Slide from right. */
+.content-section {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+
+.content-section.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Float Animation - Subtle up-down bob. */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Pulse Animation - Scale and opacity throb. */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Responsive Design - Mobile adaptations for sidebar, grids, forms. */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Full width on mobile. */
+        transform: translateX(-100%);
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+        width: 100%;
+    }
+
+    .hero-section {
+        flex-direction: column;
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+
+    .guitar-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .settings-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions,
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .settings-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-actions { flex-direction: column; align-items: stretch; }
+    .profile-actions .btn-primary, .profile-actions .btn-secondary { width: 100%; }
+}
+
+/* Custom Scrollbar - Thin gradient thumb for webkit browsers. */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-gradient);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Full Viewport Setup - Ensures proper scrolling and prevents height constraints that could interfere with fixed positioning. */
+html {
+    height: 100%; /* Allows full document height for scrolling. */
+}
+
+body {
+    min-height: 100vh; /* Expands to content height, preventing fixed elements from being clipped. */
+    overflow-x: hidden;
+}
+
+/* Main Content Width Redefine - Ensures consistency. */
+.main-content {
+    width: calc(100% - 300px);
+    min-height: 100vh;
+    transition: var(--transition);
+}
+
+.main-content.expanded {
+    width: 100%;
+}
+
+/* Ripple Effects - Pseudo-element for click feedback on buttons. */
+.btn-primary, .btn-secondary, .btn-outline-primary, .btn-outline-secondary {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Primary Ripple - White expanding circle on click. */
+.btn-primary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-primary:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+}
+
+.btn-primary:not(:active)::after {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Disable Ripple on Specific Buttons. */
+.btn-primary.no-ripple::after,
+.btn-outline-primary.no-ripple::after,
+.btn-secondary.no-ripple::after,
+.btn-outline-secondary.no-ripple::after {
+    display: none;
+}
+
+/* Outline Ripple - Blue tint. */
+.btn-outline-primary::after, .btn-outline-secondary::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(102, 126, 234, 0.2);
+    transform: translate(-50%, -50%);
+    transition: width 0.5s, height 0.5s ease-out, opacity 0.5s ease-out;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.btn-outline-primary:active::after, .btn-outline-secondary:active::after {
+    width: 300px;
+    height: 300px;
+    opacity: 1;
+}
+
+.btn-outline-primary:not(:active)::after, .btn-outline-secondary:not(:active)::after {
+    width: 0;
+    height: 0;
+    opacity: 0;
+    transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+/* Page Fade In - Simple opacity for section switches. */
+.content-section {
+    animation: fadeInPage 0.3s ease-out !important;
+}
+
+@keyframes fadeInPage {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Hero Title Animation Setup. */
+.hero-title {
+    background-size: 200% 200%;
+    animation: textGlow 3s ease-in-out infinite;
+}
+
+/* Text Glow - Subtle opacity pulse. */
+@keyframes textGlow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+}
+
+/* Form Controls - Unified focus styles (overrides). */
+.form-control, .form-select, input[type="text"], input[type="email"], input[type="number"], textarea {
+    transition: all 0.2s ease;
+    border: 2px solid rgba(102, 126, 234, 0.1); /* Default subtle border. */
+    position: relative;
+}
+
+.form-control:focus, .form-select:focus, input:focus, textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Toggle Label Animation. */
+.toggle-label {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* Bouncy. */
+}
+
+.toggle-input:checked + .toggle-label {
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Toggle Flip Animation - Unused, but defined for potential. */
+@keyframes toggleFlip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(90deg); }
+    100% { transform: rotateY(0deg); }
+}
+
+/* Settings Card Entrance. */
+.settings-card {
+    animation: cardSlideIn 0.3s ease-out;
+}
+
+.settings-card:nth-child(1) { animation-delay: 0s; }
+.settings-card:nth-child(2) { animation-delay: 0s; }
+.settings-card:nth-child(3) { animation-delay: 0s; }
+
+/* Card Slide In Keyframes. */
+@keyframes cardSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Stat Value Counter Animation. */
+.stat-value {
+    animation: countAnimation 0.8s ease-out;
+    font-family: 'Courier New', monospace; /* Monospace for numbers. */
+}
+
+@keyframes countAnimation {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+        filter: blur(5px); /* Blurry entrance. */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+/* Profile Pic Entrance. */
+.profile-pic {
+    animation: picAppear 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes picAppear {
+    0% {
+        opacity: 0;
+        transform: scale(0.5) rotate(-10deg); /* Spin-scale in. */
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+/* Button Press Scale. */
+.btn-primary:active, .btn-secondary:active, .btn-outline-primary:active, .btn-outline-secondary:active {
+    transform: scale(0.95) !important;
+}
+
+@keyframes buttonPress {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.92); }
+    100% { transform: scale(0.95); }
+}
+
+/* Invalid Input Styling. */
+.form-control.is-invalid {
+    border-color: #c44569;
+    background: rgba(196, 69, 105, 0.05);
+}
+
+/* Shake Animation - For errors. */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+}
+
+/* Success Notification Slide In. */
+.notification-success, .alert-success {
+    animation: slideInSuccess 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes slideInSuccess {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px) translateX(20px);
+        filter: blur(10px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) translateX(0);
+        filter: blur(0);
+    }
+}
+
+/* Checkmark Draw Animation. */
+.success-checkmark {
+    animation: checkmarkDraw 0.6s ease-out forwards;
+}
+
+@keyframes checkmarkDraw {
+    0% {
+        stroke-dashoffset: 100;
+        opacity: 0;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+/* Loading Spinner Rotation. */
+.loading-spinner {
+    animation: spinRotate 1.2s linear infinite;
+}
+
+@keyframes spinRotate {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.1); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Spinner Pulse - Duplicate for compatibility. */
+.spinner-pulse {
+    animation: spinRotate 1.2s linear infinite;
+}
+
+/* Pulse Spin Shadow Glow. */
+@keyframes pulseSpin {
+    0%, 100% {
+        opacity: 1;
+        filter: drop-shadow(0 0 0px rgba(102, 126, 234, 0.5));
+    }
+    50% {
+        opacity: 0.6;
+        filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.8));
+    }
+}
+
+/* Floating Label Animation Setup. */
+.form-label {
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.form-control:focus ~ .form-label, .form-select:focus ~ .form-label {
+    color: #667eea;
+    font-weight: 600;
+    animation: labelFloat 0.3s ease-out;
+}
+
+@keyframes labelFloat {
+    from {
+        transform: translateY(0);
+    }
+    to {
+        transform: translateY(-5px);
+    }
+}
+
+/* Slider Thumb Glow on Load. */
+.form-range::-webkit-slider-thumb {
+    animation: thumbGlow 0.3s ease-out;
+    transition: all 0.2s ease;
+}
+
+@keyframes thumbGlow {
+    0% {
+        box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7);
+    }
+    100% {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+}
+
+/* Thumb Active Press. */
+.form-range::-webkit-slider-thumb:active {
+    animation: thumbActive 0.2s ease-out;
+    transform: scale(1.3);
+}
+
+@keyframes thumbActive {
+    from {
+        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.4);
+    }
+    to {
+        box-shadow: 0 0 0 6px rgba(102, 126, 234, 0.2);
+    }
+}
+
+/* Placeholder Fade on Focus. */
+.form-control::placeholder {
+    transition: opacity 0.3s ease;
+    opacity: 0.5;
+}
+
+.form-control:focus::placeholder {
+    opacity: 0.3;
+    animation: placeholderFade 0.3s ease;
+}
+
+@keyframes placeholderFade {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0.3;
+        transform: translateX(5px);
+    }
+}
+
+/* Ripple Effect Keyframes - Expanding circle. */
+@keyframes rippleEffect {
+    from {
+        opacity: 1;
+        transform: scale(0);
+    }
+    to {
+        opacity: 0;
+        transform: scale(4);
+    }
+}
+
+
+
