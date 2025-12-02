@@ -6,7 +6,7 @@
 
 /* Root CSS Variables - Defines global color scheme, backgrounds, transitions, and shadows for consistency across light/dark modes. */
 :root {
-    --primary-gradient: linear-gradient(135deg, #66eea 0%, #764ba2 100%); /* Main background and accent gradient (purple-blue). */
+    --primary-gradient: linear-gradient(135deg, #1223b8 0%, #ab40cc 100%);    
     --menu-color: #4b4b4b; /* Base color for menu toggle border and hamburger lines (yellow). */
     --menu-color-light: #969493; /* Lighter variant for hover/active states (orange). */
     --menu-color-shadow: #727271; /* Shadow color for menu toggle depth (dark orange to match theme). */
