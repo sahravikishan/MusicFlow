@@ -6,20 +6,22 @@
 
 /* Root CSS Variables - Defines global color scheme, backgrounds, transitions, and shadows for consistency across light/dark modes. */
 :root {
-    --primary-gradient: linear-gradient(135deg, #1223b8 0%, #ab40cc 100%);    
-    --menu-color: #4b4b4b; /* Base color for menu toggle border and hamburger lines (yellow). */
-    --menu-color-light: #969493; /* Lighter variant for hover/active states (orange). */
-    --menu-color-shadow: #727271; /* Shadow color for menu toggle depth (dark orange to match theme). */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --menu-color: #667eea; /* Base color for menu toggle border and hamburger lines (purple-blue). */
+    --menu-color-light: #89a7ff; /* Lighter variant for hover/active states (light blue). */
+    --menu-color-shadow: rgba(102, 126, 234, 0.4); /* Shadow color for menu toggle depth (purple-blue with transparency). */
     --sidebar-bg-dark: #1a1a2e; /* Dark mode sidebar background. */
-    --sidebar-bg-light: rgba(245, 245, 253, 0.95); /* Light mode sidebar background with transparency. */
-    --sidebar-hover-dark: rgba(65, 64, 64, 0.05); /* Dark mode hover overlay for sidebar items. */
-    --sidebar-hover-light: rgba(53, 53, 53, 0.05); /* Light mode hover overlay for sidebar items. */
-    --text-primary: #333; /* Main text color for headings and body. */
-    --text-secondary: #666; /* Secondary text color for subtitles and muted elements. */
-    --text-muted: #999; /* Muted text for hints and low-priority info. */
-    --border-color: #e1e5e9; /* General border color for forms and dividers. */
-    --card-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Default shadow for cards and elevated elements. */
+    --sidebar-bg-light: rgba(255, 255, 255, 0.98); /* Light mode sidebar background with transparency. */
+    --sidebar-hover-dark: rgba(102, 126, 234, 0.15); /* Dark mode hover overlay for sidebar items. */
+    --sidebar-hover-light: rgba(102, 126, 234, 0.08); /* Light mode hover overlay for sidebar items. */
+    --text-primary: #2c3e50; /* Main text color for headings and body. */
+    --text-secondary: #5a6c7d; /* Secondary text color for subtitles and muted elements. */
+    --text-muted: #95a5a6; /* Muted text for hints and low-priority info. */
+    --border-color: #e8ecf1; /* General border color for forms and dividers. */
+    --card-shadow: 0 4px 20px rgba(102, 126, 234, 0.12); /* Default shadow for cards and elevated elements. */
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth easing transition for hovers and state changes. */
+    --card-bg-light: rgba(255, 255, 255, 0.95); /* Light mode card background */
+    --card-bg-dark: rgba(30, 30, 46, 0.95); /* Dark mode card background */
 }
 
 /* Global Reset - Removes default margins/padding and sets box-sizing for consistent layout calculations. */
@@ -31,7 +33,7 @@
 
 /* Body Styles - Sets full-viewport background gradient, font stack, text color, and prevents horizontal scroll. */
 body {
-    background: var(--primary-gradient);
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     min-height: 100vh;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     color: var(--text-primary);
@@ -46,19 +48,20 @@ body {
     left: 20px;
     width: 45px;
     height: 45px;
-    background: transparent;
-    backdrop-filter: blur(1px); /* Blurs background for frosted glass effect. */
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px); /* Blurs background for frosted glass effect. */
     border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 2000; /* Ensures it stays on top of other elements. */
-    transition: all 1000ms; /* Slow transition for dramatic hover/active effects. */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth transition for dramatic hover/active effects. */
     border: none;
     outline: 2px solid var(--menu-color); /* Visible border for the button. */
     position: relative;
     overflow: hidden; /* Contains the skew pseudo-element. */
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
 }
 
 /* Pseudo-element for skew slide-in background effect on hover/active. */
@@ -72,14 +75,14 @@ body {
     background-color: var(--menu-color);
     transform: skewX(45deg); /* Creates diagonal slide effect. */
     z-index: -1;
-    transition: width 1000ms; /* Matches button transition for sync. */
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* Matches button transition for sync. */
 }
 
 /* Hover state: Scales up, changes border color, adds shadow, and expands pseudo-element. */
 .menu-toggle:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     outline: 2px solid var(--menu-color-light);
-    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+    box-shadow: 0 6px 20px var(--menu-color-shadow);
 }
 
 .menu-toggle:hover::before {
@@ -89,7 +92,7 @@ body {
 /* Active state: Updates border and shadow (no scale, as it's for open sidebar). Expands pseudo-element. */
 .menu-toggle.active {
     outline: 2px solid var(--menu-color-light);
-    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+    box-shadow: 0 6px 20px var(--menu-color-shadow);
 }
 
 .menu-toggle.active::before {
@@ -113,7 +116,7 @@ body {
     width: 100%;
     background: var(--menu-color);
     border-radius: 1px;
-    transition: all 1000ms; /* Slow for fluid animation. */
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth for fluid animation. */
 }
 
 .hamburger span:nth-child(1) { top: 0; } /* Top line. */
@@ -149,7 +152,7 @@ body {
 
 /* Dark Mode Menu Toggle - Overrides for dark theme compatibility. */
 .dark-mode .menu-toggle {
-    background: transparent;
+    background: rgba(30, 30, 46, 0.9);
     outline: 2px solid var(--menu-color);
 }
 
@@ -159,9 +162,9 @@ body {
 
 /* Dark Mode Hover: Includes scale and expansion. */
 .dark-mode .menu-toggle:hover {
-    transform: scale(1.1);
+    transform: scale(1.05);
     outline: 2px solid var(--menu-color-light);
-    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+    box-shadow: 0 6px 20px var(--menu-color-shadow);
 }
 
 .dark-mode .menu-toggle:hover::before {
@@ -171,7 +174,7 @@ body {
 /* Dark Mode Active: Border and shadow updates. */
 .dark-mode .menu-toggle.active {
     outline: 2px solid var(--menu-color-light);
-    box-shadow: 4px 5px 17px -4px var(--menu-color-shadow);
+    box-shadow: 0 6px 20px var(--menu-color-shadow);
 }
 
 .dark-mode .menu-toggle.active::before {
@@ -204,7 +207,7 @@ body {
     overflow-y: auto; /* Scrollable if content overflows. */
     z-index: 1000;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); /* Smooth slide animation. */
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1); /* Right-side shadow for depth. */
+    box-shadow: 4px 0 20px rgba(102, 126, 234, 0.15); /* Right-side shadow for depth. */
     backdrop-filter: blur(20px); /* Frosted effect. */
 }
 
@@ -216,7 +219,7 @@ body {
 /* Sidebar Header - User profile section with avatar and info. */
 .sidebar-header {
     padding: 4rem 1.5rem 2rem 1.5rem; /* Extra top padding to account for fixed toggle. */
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08); /* Subtle divider. */
+    border-bottom: 1px solid rgba(102, 126, 234, 0.1); /* Subtle divider. */
 }
 
 /* User Profile Layout - Flex row for avatar and text info. */
@@ -239,7 +242,7 @@ body {
     justify-content: center;
     font-size: 1.5rem;
     color: white;
-    border: 3px solid rgba(255, 255, 255, 0.1); /* Subtle inner border. */
+    border: 3px solid rgba(102, 126, 234, 0.2); /* Subtle inner border. */
     transition: var(--transition);
 }
 
@@ -311,7 +314,7 @@ body {
 .user-status {
     display: inline-block;
     padding: 0.25rem 0.75rem;
-    background: rgba(76, 175, 80, 0.2);
+    background: rgba(76, 175, 80, 0.15);
     color: #4CAF50;
     border-radius: 12px;
     font-size: 0.75rem;
@@ -353,7 +356,7 @@ body {
     color: var(--text-primary);
     text-decoration: none;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
 /* Menu Item Active Click - Quick scale feedback. */
@@ -377,7 +380,7 @@ body {
     justify-content: center;
     margin-right: 1rem;
     transition: var(--transition);
-    background: rgba(0, 0, 0, 0.05); /* Subtle background. */
+    background: rgba(102, 126, 234, 0.08); /* Subtle background. */
 }
 
 /* Icon Font Size and Color. */
@@ -387,13 +390,13 @@ body {
 }
 
 /* Guitar-Type Specific Icon Styles - Themed backgrounds and colors for acoustic/electric/etc. */
-.menu-icon.acoustic { background: rgba(212, 165, 116, 0.2); }
+.menu-icon.acoustic { background: rgba(212, 165, 116, 0.15); }
 .menu-icon.acoustic i { color: #d4a574; }
-.menu-icon.electric { background: rgba(74, 144, 226, 0.2); }
+.menu-icon.electric { background: rgba(74, 144, 226, 0.15); }
 .menu-icon.electric i { color: #4a90e2; }
-.menu-icon.classical { background: rgba(196, 69, 105, 0.2); }
+.menu-icon.classical { background: rgba(196, 69, 105, 0.15); }
 .menu-icon.classical i { color: #c44569; }
-.menu-icon.bass { background: rgba(52, 73, 94, 0.2); }
+.menu-icon.bass { background: rgba(52, 73, 94, 0.15); }
 .menu-icon.bass i { color: #34495e; }
 
 /* Active Indicator Dot - Small circle on right for current item. */
@@ -419,7 +422,7 @@ body {
     left: 0;
     right: 0;
     padding: 1.5rem;
-    border-top: 1px solid rgba(0, 0, 0, 0.1); /* Divider from menu. */
+    border-top: 1px solid rgba(102, 126, 234, 0.1); /* Divider from menu. */
 }
 
 /* Quick Stats Layout - Flex wrap for small badges. */
@@ -435,27 +438,27 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 0.75rem;
-    background: rgba(0, 0, 0, 0.05);
+    background: rgba(102, 126, 234, 0.08);
     border-radius: 8px;
     font-size: 0.8rem;
 }
 
 /* Dark Mode Styles - Global overrides for dark theme, applied via .dark-mode class on body. */
 .dark-mode {
-    background: #0f1419; /* Dark body background. */
-    color: #d3d3d3; /* Light text base. */
+    background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 100%); /* Dark body background. */
+    color: #e6eef8; /* Light text base. */
 }
 
 /* Dark Sidebar - Darker background and shadow. */
 .dark-mode .sidebar {
     background: var(--sidebar-bg-dark);
     color: #e6eef8;
-    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 4px 0 20px rgba(0, 0, 0, 0.5);
 }
 
 /* Dark Header Divider. */
 .dark-mode .sidebar-header {
-    border-bottom: 1px solid rgba(230, 230, 230, 0.04);
+    border-bottom: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 /* Dark User Name. */
@@ -482,7 +485,7 @@ body {
 .dark-mode .sidebar-menu-item:hover {
     background: var(--sidebar-hover-dark);
     color: #ffffff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.25);
 }
 
 /* Dark Active Menu Item. */
@@ -493,7 +496,7 @@ body {
 
 /* Dark Icon Background. */
 .dark-mode .menu-icon {
-    background: rgba(255, 255, 255, 0.03);
+    background: rgba(102, 126, 234, 0.15);
 }
 
 /* Dark Icon Color. */
@@ -520,12 +523,12 @@ body {
 
 /* Dark Footer Divider. */
 .dark-mode .sidebar-footer {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(102, 126, 234, 0.2);
 }
 
 /* Dark Stat Background. */
 .dark-mode .stat-item {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(102, 126, 234, 0.15);
 }
 
 /* Main Content - Pushes content right of sidebar, adjusts on collapse. */
@@ -556,7 +559,7 @@ body {
 
 /* Simple Hero Section - Prominent intro card with title, subtitle, features, and icon. */
 .hero-section {
-    background: rgba(255, 255, 255, 0.95); /* Semi-transparent white for readability. */
+    background: var(--card-bg-light); /* Semi-transparent white for readability. */
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 3rem;
@@ -582,7 +585,7 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 1rem;
-    animation: textGlow 3s ease-in-out infinite; /* Pulsing opacity for emphasis. */
+    animation: textGlow 3s ease-in-out infinite, titlePulse 2s ease-in-out infinite; /* Pulsing opacity for emphasis. */
 }
 
 /* Hero Subtitle - Lighter weight text. */
@@ -630,7 +633,7 @@ body {
     }
 }
 
-/* Guitar Icon Container - Large circular gradient icon. */
+/* Guitar Icon Container - Large circular gradient icon with animation. */
 .guitar-icon-container {
     width: 150px;
     height: 150px;
@@ -641,6 +644,7 @@ body {
     justify-content: center;
     font-size: 4rem;
     color: white;
+    animation: float 3s ease-in-out infinite, iconRotate 10s linear infinite;
 }
 
 /* Simple Guitar Selection - Section for selecting guitar types with draggable cards. */
@@ -651,11 +655,11 @@ body {
 
 /* Selection Heading - White text with shadow for contrast. */
 .guitar-selection h2 {
-    color: white;
+    color: var(--text-primary);
     font-size: 2rem;
     font-weight: 600;
     margin-bottom: 2rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
     animation: slideInLeft 0.6s ease-out; /* Slide from left. */
 }
 
@@ -668,7 +672,7 @@ body {
 
 /* Guitar Card - Interactive card for each guitar type. */
 .guitar-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--card-bg-light);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 2rem;
@@ -708,7 +712,7 @@ body {
         transform: scale(1.05);
     }
     100% {
-        box-shadow: 0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 0 30px currentColor, 0 0 60px currentColor, 0 0 90px rgba(102, 126, 234, 0.2);
         transform: scale(1);
     }
 }
@@ -733,7 +737,7 @@ body {
 /* Card Hover - Lift and deeper shadow. */
 .guitar-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
 }
 
 /* Dragging State - For drag-and-drop functionality. */
@@ -770,10 +774,10 @@ body {
 }
 
 /* Themed Icon Backgrounds and Colors. */
-.guitar-card.acoustic .card-icon { background: rgba(212, 165, 116, 0.2); color: #d4a574; }
-.guitar-card.electric .card-icon { background: rgba(74, 144, 226, 0.2); color: #4a90e2; }
-.guitar-card.classical .card-icon { background: rgba(196, 69, 105, 0.2); color: #c44569; }
-.guitar-card.bass .card-icon { background: rgba(52, 73, 94, 0.2); color: #34495e; }
+.guitar-card.acoustic .card-icon { background: rgba(212, 165, 116, 0.15); color: #d4a574; }
+.guitar-card.electric .card-icon { background: rgba(74, 144, 226, 0.15); color: #4a90e2; }
+.guitar-card.classical .card-icon { background: rgba(196, 69, 105, 0.15); color: #c44569; }
+.guitar-card.bass .card-icon { background: rgba(52, 73, 94, 0.15); color: #34495e; }
 
 /* Icon Hover - Scale and rotate. */
 .guitar-card:hover .card-icon {
@@ -817,7 +821,7 @@ body {
 
 .card-specs span {
     padding: 0.25rem 0.75rem;
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(102, 126, 234, 0.1);
     border-radius: 12px;
     font-size: 0.8rem;
     color: var(--text-secondary);
@@ -825,7 +829,7 @@ body {
 
 /* Simple Features - Grid section for app features with expandable subcards. */
 .features-section {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--card-bg-light);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 2rem;
@@ -860,7 +864,7 @@ body {
 /* Feature Item - Card with icon, title, desc, and hover subcard grid. */
 .feature-item {
     padding: 1.25rem 1rem;
-    background: linear-gradient(180deg, rgba(102,126,234,0.04), rgba(198,198,220,0.02)); /* Subtle gradient. */
+    background: linear-gradient(180deg, rgba(102,126,234,0.06), rgba(198,198,220,0.03)); /* Subtle gradient. */
     border-radius: 14px;
     transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
     border-left: 4px solid rgba(102,126,234,0.0); /* Hidden accent border. */
@@ -877,14 +881,14 @@ body {
 .feature-item:hover,
 .feature-item:focus {
     transform: translateY(-6px);
-    box-shadow: 0 10px 30px rgba(40, 50, 90, 0.06);
-    border-left-color: rgba(102,126,234,0.35);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+    border-left-color: rgba(102,126,234,0.5);
     outline: none;
 }
 
 /* Focus Ring for Accessibility. */
 .feature-item:focus {
-    box-shadow: 0 10px 30px rgba(40,50,90,0.09), 0 0 0 4px rgba(102,126,234,0.08);
+    box-shadow: 0 10px 30px rgba(102,126,234,0.18), 0 0 0 4px rgba(102,126,234,0.1);
 }
 
 /* Slide In Up Animation - For staggered reveals. */
@@ -941,8 +945,8 @@ body {
     gap: 0.5rem;
     padding: 0.75rem;
     border-radius: 14px;
-    background: rgba(255,255,255,0.96);
-    box-shadow: 0 10px 30px rgba(20,30,60,0.06);
+    background: rgba(255,255,255,0.98);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
     z-index: 40;
     opacity: 0;
     transform: scale(0.98) translateY(6px); /* Initial hidden state. */
@@ -973,8 +977,8 @@ body {
     color: var(--text-primary);
     text-decoration: none;
     font-size: 0.95rem;
-    border: 1px solid rgba(0,0,0,0.04);
-    box-shadow: 0 6px 18px rgba(20,30,60,0.03);
+    border: 1px solid rgba(102, 126, 234, 0.08);
+    box-shadow: 0 6px 18px rgba(102, 126, 234, 0.08);
     transition: transform 140ms ease, box-shadow 140ms ease, background 140ms ease;
     text-align: center;
 }
@@ -983,7 +987,7 @@ body {
 .feature-item .subcard:hover,
 .feature-item .subcard:focus {
     transform: translateY(-6px);
-    box-shadow: 0 14px 34px rgba(20,30,60,0.09);
+    box-shadow: 0 14px 34px rgba(102, 126, 234, 0.18);
     background: white;
 }
 
@@ -1028,7 +1032,7 @@ body {
 
 /* Enhanced Profile Section - Centered form for user profile editing. */
 .profile-container {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--card-bg-light);
     backdrop-filter: blur(10px);
     border-radius: 20px;
     padding: 2rem;
@@ -1061,7 +1065,7 @@ body {
     text-align: center;
     margin-bottom: 2rem;
     padding: 2rem;
-    background: rgba(102, 126, 234, 0.05); /* Accent background. */
+    background: rgba(102, 126, 234, 0.06); /* Accent background. */
     border-radius: 15px;
 }
 
@@ -1266,18 +1270,18 @@ body {
 .settings-header {
     text-align: center;
     margin-bottom: 2rem;
-    color: white;
+    color: var(--text-primary);
 }
 
 .settings-header h2 {
     font-size: 1.8rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 10px rgba(102, 126, 234, 0.2);
 }
 
 .settings-header p {
-    color: rgba(255, 255, 255, 0.8);
+    color: var(--text-secondary);
 }
 
 /* Settings Grid - Responsive cards. */
@@ -1290,7 +1294,7 @@ body {
 
 /* Settings Card - Individual setting group. */
 .settings-card {
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--card-bg-light);
     backdrop-filter: blur(10px);
     border-radius: 16px;
     padding: 1.5rem;
@@ -1300,7 +1304,7 @@ body {
 
 .settings-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.25);
 }
 
 /* Card Header - Icon + title with divider. */
@@ -1377,7 +1381,7 @@ body {
     border-radius: 50%;
     background: var(--primary-gradient);
     cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3);
 }
 
 /* Volume Display. */
@@ -1459,6 +1463,43 @@ body {
     justify-content: center;
 }
 
+/* Dark Mode Card Backgrounds */
+.dark-mode .hero-section,
+.dark-mode .guitar-card,
+.dark-mode .features-section,
+.dark-mode .profile-container,
+.dark-mode .settings-card {
+    background: var(--card-bg-dark);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.dark-mode .guitar-selection h2,
+.dark-mode .settings-header {
+    color: #e6eef8;
+}
+
+.dark-mode .settings-header p {
+    color: rgba(230, 230, 230, 0.7);
+}
+
+.dark-mode .card-specs span {
+    background: rgba(102, 126, 234, 0.2);
+    color: rgba(230, 230, 230, 0.8);
+}
+
+.dark-mode .feature-item {
+    background: linear-gradient(180deg, rgba(102,126,234,0.12), rgba(198,198,220,0.06));
+}
+
+.dark-mode .feature-item .subcards {
+    background: rgba(30, 30, 46, 0.98);
+}
+
+.dark-mode .feature-item .subcard {
+    background: linear-gradient(180deg, rgba(40,40,56,0.98), rgba(30,30,46,0.95));
+    border: 1px solid rgba(102, 126, 234, 0.15);
+}
+
 /* Animations - Shared keyframes for various effects. */
 /* General Fade In - Bottom-up opacity. */
 @keyframes fadeIn {
@@ -1484,10 +1525,34 @@ body {
     50% { transform: translateY(-10px); }
 }
 
+/* Icon Rotate Animation - Slow continuous rotation */
+@keyframes iconRotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Title Pulse Animation - Subtle scale pulse */
+@keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
 /* Pulse Animation - Scale and opacity throb. */
 @keyframes pulse {
     0%, 100% { opacity: 1; transform: scale(1); }
     50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+/* Slide In Left Animation */
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
 /* Responsive Design - Mobile adaptations for sidebar, grids, forms. */
@@ -1550,7 +1615,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(102, 126, 234, 0.05);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -1678,7 +1743,7 @@ body {
 /* Text Glow - Subtle opacity pulse. */
 @keyframes textGlow {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.8; }
+    50% { opacity: 0.85; }
 }
 
 /* Form Controls - Unified focus styles (overrides). */
@@ -1935,6 +2000,4 @@ body {
         transform: scale(4);
     }
 }
-
-
 
