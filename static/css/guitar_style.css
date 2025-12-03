@@ -461,24 +461,24 @@ body {
     border-bottom: 1px solid rgba(102, 126, 234, 0.2);
 }
 
-/* Dark User Name. */
+/* Dark User Name - FIXED: High contrast white text */
 .dark-mode .user-name {
-    color: #e6eef8;
+    color: #ffffff;
 }
 
-/* Dark User Email. */
+/* Dark User Email - FIXED: High contrast light gray */
 .dark-mode .user-email {
-    color: rgba(230, 230, 230, 0.7);
+    color: rgba(255, 255, 255, 0.85);
 }
 
-/* Dark Menu Divider. */
+/* Dark Menu Divider - FIXED: Better visibility */
 .dark-mode .menu-divider {
-    color: rgba(230, 230, 230, 0.5);
+    color: rgba(255, 255, 255, 0.7);
 }
 
-/* Dark Menu Item Text. */
+/* Dark Menu Item Text - FIXED: High contrast */
 .dark-mode .sidebar-menu-item {
-    color: rgba(230, 230, 230, 0.88);
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Dark Menu Hover - Darker tint, white text, deeper shadow. */
@@ -499,9 +499,9 @@ body {
     background: rgba(102, 126, 234, 0.15);
 }
 
-/* Dark Icon Color. */
+/* Dark Icon Color - FIXED: Better visibility */
 .dark-mode .menu-icon i {
-    color: #e6eef8;
+    color: rgba(255, 255, 255, 0.9);
 }
 
 /* Dark Themed Icons - Preserve guitar colors. */
@@ -515,10 +515,10 @@ body {
     background: #89a7ff;
 }
 
-/* Dark Main Content Text. */
+/* Dark Main Content Text - FIXED: High contrast */
 .dark-mode .main-content {
     background: transparent;
-    color: #e6eef8;
+    color: #ffffff;
 }
 
 /* Dark Footer Divider. */
@@ -576,7 +576,7 @@ body {
     flex: 1;
 }
 
-/* Hero Title - Gradient text with glow animation. */
+/* Hero Title - Gradient text with smooth fade animation (removed glow). */
 .hero-title {
     font-size: 3rem;
     font-weight: 700;
@@ -585,7 +585,7 @@ body {
     -webkit-text-fill-color: transparent;
     background-clip: text;
     margin-bottom: 1rem;
-    animation: textGlow 3s ease-in-out infinite, titlePulse 2s ease-in-out infinite; /* Pulsing opacity for emphasis. */
+    animation: textGlow 3s ease-in-out infinite, titlePulse 2s ease-in-out infinite;
 }
 
 /* Hero Subtitle - Lighter weight text. */
@@ -633,7 +633,7 @@ body {
     }
 }
 
-/* Guitar Icon Container - Large circular gradient icon with animation. */
+/* Guitar Icon Container - REPLACED: Smooth scale pulse instead of ring animation */
 .guitar-icon-container {
     width: 150px;
     height: 150px;
@@ -644,7 +644,20 @@ body {
     justify-content: center;
     font-size: 4rem;
     color: white;
-    animation: float 3s ease-in-out infinite, iconRotate 10s linear infinite;
+    animation: smoothPulse 3s ease-in-out infinite;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+}
+
+/* REPLACED: Smooth pulse animation - better performance than ring animation */
+@keyframes smoothPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 8px 30px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.4);
+    }
 }
 
 /* Simple Guitar Selection - Section for selecting guitar types with draggable cards. */
@@ -653,7 +666,7 @@ body {
     animation: fadeIn 0.8s ease-out 0.3s backwards; /* Delayed fade in. */
 }
 
-/* Selection Heading - White text with shadow for contrast. */
+/* Selection Heading - FIXED: High contrast in dark mode */
 .guitar-selection h2 {
     color: var(--text-primary);
     font-size: 2rem;
@@ -796,7 +809,7 @@ body {
     100% { transform: scale(1) rotate(0deg); }
 }
 
-/* Card Title. */
+/* Card Title - FIXED: High contrast in dark mode */
 .guitar-card h3 {
     font-size: 1.3rem;
     font-weight: 600;
@@ -804,7 +817,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Card Description. */
+/* Card Description - FIXED: Better visibility in dark mode */
 .guitar-card p {
     color: var(--text-secondary);
     margin-bottom: 1rem;
@@ -837,7 +850,7 @@ body {
     animation: fadeIn 0.8s ease-out 0.4s backwards; /* Delayed entrance. */
 }
 
-/* Features Heading. */
+/* Features Heading - FIXED: High contrast in dark mode */
 .features-section h3 {
     font-size: 1.8rem;
     font-weight: 600;
@@ -1015,7 +1028,7 @@ body {
     50% { transform: scale(1.1); }
 }
 
-/* Feature Title. */
+/* Feature Title - FIXED: High contrast in dark mode */
 .feature-item h4 {
     font-size: 1.1rem;
     font-weight: 600;
@@ -1023,7 +1036,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Feature Description. */
+/* Feature Description - FIXED: Better visibility in dark mode */
 .feature-item p {
     color: var(--text-secondary);
     font-size: 0.9rem;
@@ -1186,7 +1199,7 @@ body {
     grid-column: 1 / -1; /* Spans full row for textareas. */
 }
 
-/* Form Label. */
+/* Form Label - FIXED: High contrast in dark mode */
 .form-group label {
     font-weight: 600;
     color: var(--text-primary);
@@ -1473,18 +1486,37 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
+/* FIXED: Dark mode heading visibility */
 .dark-mode .guitar-selection h2,
-.dark-mode .settings-header {
-    color: #e6eef8;
+.dark-mode .settings-header h2,
+.dark-mode .features-section h3,
+.dark-mode .profile-header h2,
+.dark-mode .card-header h3 {
+    color: #ffffff;
 }
 
-.dark-mode .settings-header p {
-    color: rgba(230, 230, 230, 0.7);
+.dark-mode .settings-header p,
+.dark-mode .profile-header p {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* FIXED: Dark mode card text visibility */
+.dark-mode .guitar-card h3,
+.dark-mode .feature-item h4,
+.dark-mode .form-group label,
+.dark-mode .setting-item label {
+    color: #ffffff;
+}
+
+.dark-mode .guitar-card p,
+.dark-mode .feature-item p,
+.dark-mode .hero-subtitle {
+    color: rgba(255, 255, 255, 0.8);
 }
 
 .dark-mode .card-specs span {
     background: rgba(102, 126, 234, 0.2);
-    color: rgba(230, 230, 230, 0.8);
+    color: rgba(255, 255, 255, 0.85);
 }
 
 .dark-mode .feature-item {
@@ -1523,12 +1555,6 @@ body {
 @keyframes float {
     0%, 100% { transform: translateY(0px); }
     50% { transform: translateY(-10px); }
-}
-
-/* Icon Rotate Animation - Slow continuous rotation */
-@keyframes iconRotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
 }
 
 /* Title Pulse Animation - Subtle scale pulse */
