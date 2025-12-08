@@ -6,19 +6,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicFlow - About & Features</title>
-    <link rel="icon" href="{% static '/images/favicon.jpg' %}" type="image/jpg">
+    <link rel="icon" href="{% static '/images/Music.jpg' %}" type="image/jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{% static 'css/guitar_style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/guitar_global.css' %}">
     <style>
-        /* Additional styles for info page */
+        /* ========================================
+           ROOT VARIABLES & GLOBAL STYLES
+           ======================================== */
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --card-bg-light: rgba(255, 255, 255, 0.95);
+            --card-bg-dark: rgba(30, 30, 46, 0.95);
+            --text-primary: #2c3e50;
+            --text-secondary: #5a6c7d;
+            --dark-text-primary: #ffffff;
+            --dark-text-secondary: rgba(255, 255, 255, 0.8);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --card-shadow: 0 4px 20px rgba(102, 126, 234, 0.12);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* ========================================
+           BACK BUTTON
+           ======================================== */
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 2000;
+            transition: var(--transition);
+            border: 2px solid #667eea;
+            text-decoration: none;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .back-button:hover {
+            transform: scale(1.1) rotate(-5deg);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: #667eea;
+        }
+
+        .back-button i {
+            font-size: 1.3rem;
+        }
+
+        /* ========================================
+           MAIN CONTENT CONTAINER
+           ======================================== */
+        .main-content-info {
+            padding: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-top: 6rem;
+        }
+
+        /* ========================================
+           HERO SECTION - MUSICFLOW BRANDING
+           ======================================== */
         .info-hero {
             background: var(--card-bg-light);
             backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 4rem 2rem;
-            margin-bottom: 3rem;
+            border-radius: 25px;
+            padding: 5rem 3rem;
+            margin-bottom: 4rem;
             text-align: center;
             box-shadow: var(--card-shadow);
             position: relative;
@@ -32,11 +108,11 @@
             left: -50%;
             width: 200%;
             height: 200%;
-            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            animation: heroRotate 20s linear infinite;
         }
 
-        @keyframes rotate {
+        @keyframes heroRotate {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
         }
@@ -47,439 +123,1077 @@
         }
 
         .musicflow-logo {
+            font-size: 5rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1.5rem;
+            animation: logoFloat 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes logoFloat {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .musicflow-icon {
             font-size: 4rem;
+            margin-right: 1rem;
+            animation: iconPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes iconPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .musicflow-tagline {
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .musicflow-description {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 900px;
+            margin: 0 auto 3rem;
+            line-height: 1.9;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            flex-wrap: wrap;
+            margin-top: 3rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+            animation: countUp 2s ease-out;
+        }
+
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* ========================================
+           FEATURE CARDS WITH MODALS
+           ======================================== */
+        .features-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg-light);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid transparent;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+
+        .feature-icon-container {
+            width: 100px;
+            height: 100px;
+            border-radius: 20px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            animation: iconFloat 3s ease-in-out infinite;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes iconFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        .feature-icon-container i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .feature-card h3 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            text-align: center;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 1.05rem;
+        }
+
+        .feature-highlights {
+            list-style: none;
+            padding: 0;
+            margin: 2rem 0;
+        }
+
+        .feature-highlights li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .feature-highlights li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .learn-more-btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 1rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .learn-more-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        /* ========================================
+           MODAL STYLES
+           ======================================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--card-bg-light);
+            border-radius: 25px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 3rem;
+            position: relative;
+            animation: modalSlideIn 0.4s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(244, 67, 54, 0.1);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            color: #f44336;
+            font-size: 1.5rem;
+        }
+
+        .modal-close:hover {
+            background: #f44336;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .modal-header h2 {
+            font-size: 2.5rem;
             font-weight: 700;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             margin-bottom: 1rem;
-            animation: logoGlow 3s ease-in-out infinite;
         }
 
-        @keyframes logoGlow {
-            0%, 100% {
-                filter: drop-shadow(0 0 10px rgba(102, 126, 234, 0.5));
-            }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.8));
-            }
+        .modal-visual {
+            margin: 2rem 0;
+            text-align: center;
         }
 
-        .musicflow-tagline {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-        }
-
-        .musicflow-description {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            max-width: 800px;
+        .modal-animation {
+            width: 100%;
+            max-width: 600px;
+            height: 300px;
             margin: 0 auto;
-            line-height: 1.8;
-        }
-
-        .feature-showcase {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .showcase-card {
-            background: var(--card-bg-light);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: var(--card-shadow);
-            transition: var(--transition);
-            border: 2px solid transparent;
-        }
-
-        .showcase-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.25);
-            border-color: rgba(102, 126, 234, 0.3);
-        }
-
-        .showcase-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 20px;
-            background: var(--primary-gradient);
+            border-radius: 15px;
+            background: linear-gradient(135deg, #667eea15, #764ba215);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 1.5rem;
-            animation: float 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
         }
 
-        .showcase-icon i {
-            font-size: 2.5rem;
-            color: white;
-        }
-
-        .showcase-card h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--text-primary);
-        }
-
-        .showcase-card p {
+        .modal-body {
             color: var(--text-secondary);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+            line-height: 1.8;
+            font-size: 1.1rem;
         }
 
-        .showcase-features {
+        .modal-body h3 {
+            color: var(--text-primary);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .modal-body ul {
             list-style: none;
             padding: 0;
         }
 
-        .showcase-features li {
-            padding: 0.5rem 0;
-            padding-left: 1.5rem;
+        .modal-body ul li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
             position: relative;
-            color: var(--text-secondary);
         }
 
-        .showcase-features li::before {
-            content: '✓';
+        .modal-body ul li::before {
+            content: '→';
             position: absolute;
             left: 0;
-            color: #4CAF50;
+            color: #667eea;
             font-weight: bold;
         }
 
-        .demo-section {
-            background: var(--card-bg-light);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 3rem 2rem;
-            margin-bottom: 3rem;
-            box-shadow: var(--card-shadow);
-            text-align: center;
+        /* ========================================
+           FRETBOARD ANIMATION
+           ======================================== */
+        .fretboard-animation {
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
 
-        .demo-section h2 {
-            font-size: 2rem;
-            font-weight: 600;
-            margin-bottom: 2rem;
-            color: var(--text-primary);
+        .fretboard-string {
+            position: absolute;
+            width: 90%;
+            height: 2px;
+            background: linear-gradient(90deg, #888, #ccc);
+            left: 5%;
+            animation: stringVibrate 1.5s ease-in-out infinite;
         }
 
-        .demo-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+        .fretboard-string:nth-child(1) { top: 15%; animation-delay: 0s; }
+        .fretboard-string:nth-child(2) { top: 30%; animation-delay: 0.1s; }
+        .fretboard-string:nth-child(3) { top: 45%; animation-delay: 0.2s; }
+        .fretboard-string:nth-child(4) { top: 60%; animation-delay: 0.3s; }
+        .fretboard-string:nth-child(5) { top: 75%; animation-delay: 0.4s; }
+        .fretboard-string:nth-child(6) { top: 90%; animation-delay: 0.5s; }
+
+        @keyframes stringVibrate {
+            0%, 100% { transform: translateY(0); }
+            25% { transform: translateY(-3px); }
+            75% { transform: translateY(3px); }
         }
 
-        .demo-item {
-            padding: 2rem;
-            background: linear-gradient(180deg, rgba(102,126,234,0.08), rgba(198,198,220,0.04));
-            border-radius: 15px;
-            transition: var(--transition);
-        }
-
-        .demo-item:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-        }
-
-        .demo-icon {
-            width: 60px;
-            height: 60px;
+        .fretboard-note {
+            position: absolute;
+            width: 20px;
+            height: 20px;
             border-radius: 50%;
             background: var(--primary-gradient);
+            animation: noteGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes noteGlow {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 25px rgba(102, 126, 234, 0.8);
+                transform: scale(1.2);
+            }
+        }
+
+        /* ========================================
+           AUDIO WAVEFORM ANIMATION
+           ======================================== */
+        .audio-waveform {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
+            gap: 8px;
+            height: 100%;
         }
 
-        .demo-icon i {
-            font-size: 1.8rem;
-            color: white;
+        .wave-bar {
+            width: 8px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
+            animation: waveAnimation 1.2s ease-in-out infinite;
         }
 
-        .demo-item h4 {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+        .wave-bar:nth-child(1) { height: 40px; animation-delay: 0s; }
+        .wave-bar:nth-child(2) { height: 60px; animation-delay: 0.1s; }
+        .wave-bar:nth-child(3) { height: 80px; animation-delay: 0.2s; }
+        .wave-bar:nth-child(4) { height: 100px; animation-delay: 0.3s; }
+        .wave-bar:nth-child(5) { height: 120px; animation-delay: 0.4s; }
+        .wave-bar:nth-child(6) { height: 100px; animation-delay: 0.5s; }
+        .wave-bar:nth-child(7) { height: 80px; animation-delay: 0.6s; }
+        .wave-bar:nth-child(8) { height: 60px; animation-delay: 0.7s; }
+        .wave-bar:nth-child(9) { height: 40px; animation-delay: 0.8s; }
+
+        @keyframes waveAnimation {
+            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
+            50% { transform: scaleY(1); opacity: 1; }
         }
 
-        .demo-item p {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
+        /* ========================================
+           CHORD DETECTION ANIMATION
+           ======================================== */
+        .chord-detection {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
+        .chord-circle {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 3px solid;
+            animation: chordPulse 2s ease-in-out infinite;
+        }
+
+        .chord-circle:nth-child(1) {
+            border-color: #667eea;
+            animation-delay: 0s;
+        }
+
+        .chord-circle:nth-child(2) {
+            border-color: #764ba2;
+            animation-delay: 0.5s;
+        }
+
+        .chord-circle:nth-child(3) {
+            border-color: #f093fb;
+            animation-delay: 1s;
+        }
+
+        @keyframes chordPulse {
+            0% { transform: scale(0.8); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .chord-label {
+            position: relative;
+            z-index: 10;
+            font-size: 3rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: chordChange 3s ease-in-out infinite;
+        }
+
+        @keyframes chordChange {
+            0%, 100% { content: 'C'; }
+            33% { content: 'G'; }
+            66% { content: 'Am'; }
+        }
+
+        /* ========================================
+           CTA SECTION
+           ======================================== */
         .cta-section {
             background: var(--primary-gradient);
-            border-radius: 20px;
-            padding: 3rem 2rem;
+            border-radius: 25px;
+            padding: 4rem 3rem;
             text-align: center;
             color: white;
-            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 15px 50px rgba(102, 126, 234, 0.3);
+            margin-top: 4rem;
         }
 
         .cta-section h2 {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 700;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
         .cta-section p {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            opacity: 0.9;
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.95;
         }
 
         .cta-button {
             display: inline-block;
-            padding: 1rem 3rem;
+            padding: 1.2rem 3.5rem;
             background: white;
             color: #667eea;
             border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
+            font-weight: 700;
+            font-size: 1.2rem;
             text-decoration: none;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
 
         .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
             color: #667eea;
         }
 
-        /* Dark mode overrides */
-        .dark-mode .info-hero,
-        .dark-mode .showcase-card,
-        .dark-mode .demo-section {
-            background: var(--card-bg-dark);
+        /* ========================================
+           DARK MODE
+           ======================================== */
+        .dark-mode {
+            background: linear-gradient(135deg, #0f1419 0%, #1a1a2e 100%);
+            color: var(--dark-text-primary);
         }
 
-        .dark-mode .musicflow-logo {
+        .dark-mode .info-hero,
+        .dark-mode .feature-card,
+        .dark-mode .modal-content {
+            background: var(--card-bg-dark);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .dark-mode .feature-card h3,
+        .dark-mode .modal-header h2,
+        .dark-mode .modal-body h3 {
             color: var(--dark-text-primary);
         }
 
         .dark-mode .musicflow-tagline,
         .dark-mode .musicflow-description,
-        .dark-mode .showcase-card p,
-        .dark-mode .showcase-features li,
-        .dark-mode .demo-item p {
+        .dark-mode .feature-card p,
+        .dark-mode .feature-highlights li,
+        .dark-mode .modal-body,
+        .dark-mode .stat-label {
             color: var(--dark-text-secondary);
-        }
-
-        .dark-mode .showcase-card h3,
-        .dark-mode .demo-section h2,
-        .dark-mode .demo-item h4 {
-            color: var(--dark-text-primary);
-        }
-
-        .back-button {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            width: 45px;
-            height: 45px;
-            background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border-radius: 9px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 2000;
-            transition: var(--transition);
-            border: 2px solid var(--menu-color);
-            text-decoration: none;
-            color: var(--menu-color);
-        }
-
-        .back-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px var(--menu-color-shadow);
-            color: var(--menu-color);
         }
 
         .dark-mode .back-button {
             background: rgba(30, 30, 46, 0.9);
         }
 
-        .main-content-info {
-            padding: 2rem;
-            max-width: 1400px;
-            margin: 0 auto;
-            padding-top: 5rem;
+        /* ========================================
+           RESPONSIVE DESIGN
+           ======================================== */
+        @media (max-width: 768px) {
+            .main-content-info {
+                padding: 1rem;
+                padding-top: 5rem;
+            }
+
+            .info-hero {
+                padding: 3rem 1.5rem;
+            }
+
+            .musicflow-logo {
+                font-size: 3rem;
+            }
+
+            .musicflow-tagline {
+                font-size: 1.3rem;
+            }
+
+            .musicflow-description {
+                font-size: 1rem;
+            }
+
+            .features-showcase {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .modal-content {
+                padding: 2rem 1.5rem;
+                width: 95%;
+            }
+
+            .modal-header h2 {
+                font-size: 1.8rem;
+            }
+
+            .cta-section h2 {
+                font-size: 2rem;
+            }
+
+            .hero-stats {
+                gap: 1.5rem;
+            }
+
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+
+        /* ========================================
+           SCROLLBAR CUSTOMIZATION
+           ======================================== */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
         }
     </style>
 </head>
 <body>
+    <!-- Back Button -->
     <a href="{% url 'player:guitar_index' %}" class="back-button">
         <i class="fas fa-arrow-left"></i>
     </a>
 
+    <!-- Main Content -->
     <div class="main-content-info">
-        <!-- Hero Section -->
+        <!-- Hero Section - MusicFlow Branding -->
         <div class="info-hero">
             <div class="info-hero-content">
                 <div class="musicflow-logo">
-                    <i class="fas fa-guitar"></i> MusicFlow
+                    <i class="fas fa-guitar musicflow-icon"></i>MusicFlow
                 </div>
-                <p class="musicflow-tagline">Create, Learn, and Master Guitar Music</p>
+                <p class="musicflow-tagline">Where Music Meets Innovation</p>
                 <p class="musicflow-description">
-                    MusicFlow is a comprehensive guitar learning and composition platform that combines
-                    real-time visualization, intelligent analysis, and high-quality audio playback.
-                    Whether you're a beginner learning your first chords or an advanced player composing
-                    complex pieces, MusicFlow provides all the tools you need in one beautiful interface.
+                    MusicFlow is your ultimate companion for learning, creating, and mastering guitar music.
+                    Combining cutting-edge technology with intuitive design, we bring professional-grade
+                    tools to musicians of all levels. Experience real-time visualization, intelligent chord
+                    detection, and studio-quality audio playback—all in one seamless platform.
                 </p>
+
+                <!-- Hero Stats -->
+                <!--<div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Active Musicians</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Compositions Created</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">4.9★</span>
+                        <span class="stat-label">User Rating</span>
+                    </div>
+                </div>-->
             </div>
         </div>
 
-        <!-- Feature Showcase -->
-        <div class="feature-showcase">
+        <!-- Feature Cards -->
+        <div class="features-showcase">
             <!-- Real-time Fretboard -->
-            <div class="showcase-card">
-                <div class="showcase-icon">
+            <div class="feature-card" onclick="openModal('fretboard')">
+                <div class="feature-icon-container">
                     <i class="fas fa-guitar"></i>
                 </div>
                 <h3>Real-time Fretboard</h3>
                 <p>
-                    Experience the most intuitive guitar fretboard visualization available.
-                    See exactly where to place your fingers with our color-coded system.
+                    Visualize every note on an interactive guitar fretboard. See exactly where
+                    to place your fingers with our color-coded, real-time display system.
                 </p>
-                <ul class="showcase-features">
-                    <li>Interactive fretboard display</li>
+                <ul class="feature-highlights">
+                    <li>Interactive 3D fretboard visualization</li>
                     <li>Color-coded note positions</li>
                     <li>Support for all guitar types</li>
                     <li>Zoom and pan controls</li>
                     <li>Note name overlays</li>
                 </ul>
+                <a href="#" class="learn-more-btn" onclick="event.stopPropagation(); openModal('fretboard');">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
 
             <!-- Audio Playback -->
-            <div class="showcase-card">
-                <div class="showcase-icon">
+            <div class="feature-card" onclick="openModal('audio')">
+                <div class="feature-icon-container">
                     <i class="fas fa-play-circle"></i>
                 </div>
                 <h3>Audio Playback</h3>
                 <p>
-                    Listen to your compositions with studio-quality audio. Multiple guitar tones
-                    and effects bring your music to life.
+                    Experience studio-quality audio with our advanced playback engine. Multiple
+                    guitar tones, effects, and real-time audio processing bring your music to life.
                 </p>
-                <ul class="showcase-features">
+                <ul class="feature-highlights">
                     <li>Studio-quality sound engine</li>
                     <li>Multiple guitar tone presets</li>
                     <li>Adjustable tempo and pitch</li>
                     <li>Loop playback support</li>
                     <li>Export to audio files</li>
                 </ul>
+                <a href="#" class="learn-more-btn" onclick="event.stopPropagation(); openModal('audio');">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
 
             <!-- Chord Detection -->
-            <div class="showcase-card">
-                <div class="showcase-icon">
+            <div class="feature-card" onclick="openModal('chord')">
+                <div class="feature-icon-container">
                     <i class="fas fa-chart-line"></i>
                 </div>
                 <h3>Chord Detection</h3>
                 <p>
-                    Automatically detect and analyze chords from your playing. Get instant
-                    feedback on progressions and harmonic structure.
+                    Intelligent chord recognition powered by advanced algorithms. Automatically
+                    detect chords, analyze progressions, and get instant feedback on your playing.
                 </p>
-                <ul class="showcase-features">
+                <ul class="feature-highlights">
                     <li>Automatic chord recognition</li>
                     <li>Chord progression analysis</li>
                     <li>Alternative fingering suggestions</li>
                     <li>Comprehensive chord library</li>
                     <li>Custom chord creation</li>
                 </ul>
-            </div>
-        </div>
-
-        <!-- Demo Section -->
-        <div class="demo-section">
-            <h2>Powerful Features at Your Fingertips</h2>
-            <div class="demo-grid">
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-keyboard"></i>
-                    </div>
-                    <h4>Note Input</h4>
-                    <p>Multiple input methods including keyboard, mouse, and text parsing</p>
-                </div>
-
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-eye"></i>
-                    </div>
-                    <h4>Visualization</h4>
-                    <p>Beautiful, responsive guitar fretboard with real-time updates</p>
-                </div>
-
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-music"></i>
-                    </div>
-                    <h4>Composition</h4>
-                    <p>Create and edit complex musical pieces with ease</p>
-                </div>
-
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h4>Export</h4>
-                    <p>Save your work in multiple formats including MIDI and audio</p>
-                </div>
-
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-palette"></i>
-                    </div>
-                    <h4>Themes</h4>
-                    <p>Beautiful light and dark modes for comfortable use</p>
-                </div>
-
-                <div class="demo-item">
-                    <div class="demo-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h4>Responsive</h4>
-                    <p>Works seamlessly on desktop, tablet, and mobile devices</p>
-                </div>
+                <a href="#" class="learn-more-btn" onclick="event.stopPropagation(); openModal('chord');">
+                    Learn More <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
         </div>
 
         <!-- CTA Section -->
         <div class="cta-section">
-            <h2>Ready to Start Your Musical Journey?</h2>
-            <p>Join thousands of musicians creating amazing music with MusicFlow</p>
+            <h2>Ready to Transform Your Guitar Journey?</h2>
+            <p>Join our MusicFlow System to get an amazing music experience.</p>
             <a href="{% url 'player:guitar_index' %}" class="cta-button">
                 <i class="fas fa-rocket"></i> Get Started Now
             </a>
         </div>
     </div>
 
+    <!-- Modal Overlays -->
+    <!-- Fretboard Modal -->
+    <div id="fretboard-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('fretboard')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2><i class="fas fa-guitar"></i> Real-time Fretboard Visualization</h2>
+            </div>
+            <div class="modal-visual">
+                <div class="modal-animation">
+                    <div class="fretboard-animation">
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-string"></div>
+                        <div class="fretboard-note" style="left: 20%; top: 28%;"></div>
+                        <div class="fretboard-note" style="left: 40%; top: 58%;"></div>
+                        <div class="fretboard-note" style="left: 60%; top: 43%;"></div>
+                        <div class="fretboard-note" style="left: 80%; top: 73%;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>What is Real-time Fretboard?</h3>
+                <p>
+                    Our Real-time Fretboard feature provides an interactive, visual representation of the guitar neck,
+                    showing you exactly where to place your fingers for any note or chord. This powerful tool eliminates
+                    guesswork and accelerates your learning process.
+                </p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Interactive Visualization:</strong> Click on any fret to hear the note and see its position highlighted</li>
+                    <li><strong>Color-Coded System:</strong> Different colors represent different notes, making pattern recognition easier</li>
+                    <li><strong>Multi-Guitar Support:</strong> Works with acoustic, electric, classical, and bass guitars</li>
+                    <li><strong>Zoom & Pan:</strong> Focus on specific sections of the fretboard for detailed study</li>
+                    <li><strong>Note Names:</strong> Toggle note name overlays to learn the fretboard faster</li>
+                    <li><strong>Scale Patterns:</strong> Visualize scales and modes across the entire fretboard</li>
+                </ul>
+
+                <h3>How It Helps You</h3>
+                <p>
+                    Whether you're learning your first chords or mastering complex solos, the real-time fretboard
+                    provides instant visual feedback. See chord shapes, scale patterns, and note relationships in
+                    a way that traditional tab notation simply can't match. Perfect for visual learners and anyone
+                    looking to deepen their understanding of the guitar.
+                </p>
+
+                <h3>Perfect For</h3>
+                <ul>
+                    <li>Beginners learning basic chord shapes and note positions</li>
+                    <li>Intermediate players exploring scales and improvisation</li>
+                    <li>Advanced musicians analyzing complex chord voicings</li>
+                    <li>Teachers demonstrating techniques to students</li>
+                    <li>Composers visualizing harmonic relationships</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Playback Modal -->
+    <div id="audio-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('audio')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2><i class="fas fa-play-circle"></i> Studio-Quality Audio Playback</h2>
+            </div>
+            <div class="modal-visual">
+                <div class="modal-animation">
+                    <div class="audio-waveform">
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                        <div class="wave-bar"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>What is Audio Playback?</h3>
+                <p>
+                    MusicFlow's Audio Playback engine delivers professional-grade sound quality with realistic guitar
+                    tones and effects. Hear your compositions come to life with studio-quality audio processing that
+                    rivals professional DAWs (Digital Audio Workstations).
+                </p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Multiple Guitar Tones:</strong> Choose from acoustic, electric clean, distortion, jazz, and more</li>
+                    <li><strong>Built-in Effects:</strong> Reverb, delay, chorus, and compression effects included</li>
+                    <li><strong>Tempo Control:</strong> Adjust playback speed without changing pitch (perfect for practice)</li>
+                    <li><strong>Pitch Shifting:</strong> Transpose songs to any key instantly</li>
+                    <li><strong>Loop Playback:</strong> Set loop points to practice difficult sections</li>
+                    <li><strong>Audio Export:</strong> Export your compositions as WAV or MP3 files</li>
+                    <li><strong>Metronome Integration:</strong> Built-in click track with customizable time signatures</li>
+                </ul>
+
+                <h3>Sound Engine Technology</h3>
+                <p>
+                    Our audio engine uses advanced digital signal processing (DSP) algorithms to create authentic
+                    guitar tones. Each note is carefully sampled from real guitars and processed through professional
+                    effects chains. The result? Sound quality that's indistinguishable from a real guitar recording.
+                </p>
+
+                <h3>Perfect For</h3>
+                <ul>
+                    <li>Practicing with realistic guitar sounds</li>
+                    <li>Composing and arranging music</li>
+                    <li>Creating backing tracks for practice</li>
+                    <li>Recording demos and ideas</li>
+                    <li>Learning songs by ear with tempo control</li>
+                    <li>Sharing your compositions with others</li>
+                </ul>
+
+                <h3>Export Options</h3>
+                <p>
+                    Export your finished compositions in multiple formats including WAV (lossless) and MP3 (compressed).
+                    Share your music directly to social media, email it to bandmates, or import it into your favorite
+                    DAW for further production.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chord Detection Modal -->
+    <div id="chord-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('chord')">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-header">
+                <h2><i class="fas fa-chart-line"></i> Intelligent Chord Detection</h2>
+            </div>
+            <div class="modal-visual">
+                <div class="modal-animation">
+                    <div class="chord-detection">
+                        <div class="chord-circle"></div>
+                        <div class="chord-circle"></div>
+                        <div class="chord-circle"></div>
+                        <div class="chord-label">Cmaj7</div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-body">
+                <h3>What is Chord Detection?</h3>
+                <p>
+                    Our Intelligent Chord Detection system uses advanced music theory algorithms to automatically
+                    recognize chords from your playing. Whether you're learning songs, composing music, or analyzing
+                    progressions, this feature provides instant, accurate chord identification.
+                </p>
+
+                <h3>Key Features</h3>
+                <ul>
+                    <li><strong>Automatic Recognition:</strong> Instantly identifies chords as you play or input notes</li>
+                    <li><strong>Chord Library:</strong> Access to 1000+ chord variations including jazz voicings</li>
+                    <li><strong>Progression Analysis:</strong> Understand the harmonic structure of songs</li>
+                    <li><strong>Alternative Fingerings:</strong> See multiple ways to play the same chord</li>
+                    <li><strong>Chord Suggestions:</strong> Get recommendations for chord progressions</li>
+                    <li><strong>Theory Integration:</strong> Learn the music theory behind each chord</li>
+                    <li><strong>Custom Chords:</strong> Create and save your own chord voicings</li>
+                </ul>
+
+                <h3>How It Works</h3>
+                <p>
+                    As you play notes on the fretboard or input them manually, our algorithm analyzes the pitch
+                    relationships and identifies the chord. The system recognizes major, minor, diminished, augmented,
+                    suspended, and extended chords (7th, 9th, 11th, 13th), as well as slash chords and inversions.
+                </p>
+
+                <h3>Chord Progression Analysis</h3>
+                <p>
+                    Beyond single chord detection, MusicFlow analyzes entire chord progressions. Understand the
+                    harmonic movement in songs, identify common patterns (like I-IV-V or ii-V-I), and learn how
+                    chords function within a key. This feature is invaluable for songwriters and music students.
+                </p>
+
+                <h3>Perfect For</h3>
+                <ul>
+                    <li>Learning songs by identifying chords from recordings</li>
+                    <li>Understanding music theory and chord construction</li>
+                    <li>Composing with proper harmonic progressions</li>
+                    <li>Exploring alternative chord voicings</li>
+                    <li>Analyzing your favorite songs' chord structures</li>
+                    <li>Teaching students about harmony and chord relationships</li>
+                </ul>
+
+                <h3>Chord Library</h3>
+                <p>
+                    Browse our extensive chord library featuring over 1,000 chord variations. Each chord includes
+                    multiple fingering options, music theory information (intervals, notes, scale degrees), and
+                    audio playback. Filter by chord type, difficulty level, or number of fingers required.
+                </p>
+
+                <h3>Learning Tools</h3>
+                <p>
+                    The chord detection system doubles as a learning tool. When a chord is identified, you'll see
+                    its name, the notes it contains, the intervals between notes, and how it functions in different
+                    keys. This contextual information helps you understand not just what you're playing, but why
+                    it works musically.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{% static 'js/guitar_script.js' %}"></script>
     <script>
+        // Modal Functions
+        function openModal(modalType) {
+            const modal = document.getElementById(`${modalType}-modal`);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalType) {
+            const modal = document.getElementById(`${modalType}-modal`);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        }
+
+        // Close modal on overlay click
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay.active').forEach(modal => {
+                    modal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                });
+            }
+        });
+
         // Load theme preference
         document.addEventListener('DOMContentLoaded', function() {
             const savedTheme = localStorage.getItem('musicflow_theme');
             if (savedTheme === 'dark') {
                 document.body.classList.add('dark-mode');
             }
+
+            // Animate stats on scroll
+            const observerOptions = {
+                threshold: 0.5
+            };
+
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'countUp 2s ease-out';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.stat-number').forEach(stat => {
+                observer.observe(stat);
+            });
+
+            // Animate feature cards on scroll
+            document.querySelectorAll('.feature-card').forEach((card, index) => {
+                card.style.animation = `cardSlideIn 0.6s ease-out ${index * 0.1}s backwards`;
+            });
+
+            // ADDED: Check for modal parameter in URL and open modal
+            const urlParams = new URLSearchParams(window.location.search);
+            const modalParam = urlParams.get('modal');
+            if (modalParam) {
+                openModal(modalParam);
+            }
+        });
+
+        // Card slide in animation
+        const cardStyle = document.createElement('style');
+        cardStyle.textContent = `
+            @keyframes cardSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(cardStyle);
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
     </script>
 </body>
 </html>
-
-
-
 

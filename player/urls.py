@@ -27,5 +27,7 @@ urlpatterns = [
     path('profile/update/', views.profile_update, name='profile_update'),
     path('guitar/feature-info/', views.guitar_feature_info, name='guitar_feature_info'),
     path("save-dashboard/", views.save_dashboard, name="save_dashboard"),
+    path("guitar/info/", views.guitar_title_info, name="guitar_title_info"),  # ← add this
+
 ]
 

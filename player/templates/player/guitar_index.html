@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MusicFlow - Guitar Music Generator</title>
-    <link rel="icon" href="{% static '/images/favicon.jpg' %}" type="image/jpg">
+    <link rel="icon" href="{% static '/images/Guitar.jpg' %}" type="image/jpg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/guitar_style.css' %}">
@@ -178,6 +178,28 @@
             display: block;
         }
 
+        /* ADDED: Clickable feature tags with hover effects */
+        .feature-tag {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-tag:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        /* ADDED: Hover effect for MusicFlow title */
+        .hero-title a {
+            display: inline-block;
+            transition: transform 0.3s ease, text-shadow 0.3s ease;
+        }
+
+        .hero-title a:hover {
+            transform: translateY(-5px);
+            text-shadow: 0 8px 20px rgba(102, 126, 234, 0.6);
+        }
+
         /* Mobile Responsive */
         @media (max-width: 768px) {
             .navbar-center {
@@ -332,12 +354,12 @@
             <!-- Simple Hero Section -->
             <div class="hero-section">
                 <div class="hero-content">
-                    <h1 class="hero-title">MusicFlow</h1>
+                    <h1 class="hero-title"><a href="{% url 'player:guitar_title_info' %}" style="text-decoration: none; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">MusicFlow</a></h1>
                     <p class="hero-subtitle">Create beautiful guitar compositions</p>
                     <div class="hero-features">
-                        <span class="feature-tag">Real-time Fretboard</span>
-                        <span class="feature-tag">Audio Playback</span>
-                        <span class="feature-tag">Chord Detection</span>
+                        <span class="feature-tag" onclick="event.stopPropagation(); window.location.href='{% url 'player:guitar_title_info' %}?modal=fretboard';">Real-time Fretboard</span>
+                        <span class="feature-tag" onclick="event.stopPropagation(); window.location.href='{% url 'player:guitar_title_info' %}?modal=audio';">Audio Playback</span>
+                        <span class="feature-tag" onclick="event.stopPropagation(); window.location.href='{% url 'player:guitar_title_info' %}?modal=chord';">Chord Detection</span>
                     </div>
                 </div>
                 <div class="hero-visual">
@@ -648,6 +670,7 @@
             csrfToken: "{{ csrf_token }}",
             saveDashboardUrl: "{% url 'player:save_dashboard' %}",
             profileUpdateUrl: "{% url 'player:profile_update' %}",
+            guitarFeatureInfoUrl: "{% url 'player:guitar_feature_info' %}",
             dashboard: {
                 notes: `{{ dashboard.notes|escapejs }}`,
                 theme: "{{ dashboard.page_theme|default:'dark' }}",
@@ -751,7 +774,7 @@
                 link.classList.remove('active');
             });
             if (sectionName === 'home') {
-                const homeLink = document.querySelector('.nav-link-item[onclick*="switchSection(\'home\'"]');
+                const homeLink = document.querySelector('.nav-link-item[onclick*="switchSection(\'home\')"]');
                 if (homeLink) homeLink.classList.add('active');
             } else {
                 const navbarLink = document.querySelector(`.nav-link-item[href="#${sectionName}"]`);

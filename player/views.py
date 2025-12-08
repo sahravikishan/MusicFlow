@@ -279,6 +279,9 @@ def guitar_bass(request):
                                                            'profile_picture_url')})
 
 
+def guitar_title_info(request):
+    return render(request, "player/guitar_title_info.html")
+
 def login(request):
     # Check if it's an AJAX request
     is_ajax = request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
